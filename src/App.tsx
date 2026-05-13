@@ -7,28 +7,46 @@ import {
   Text,
 } from '@mantine/core'
 import { haloTheme } from './theme'
+import { StorageProvider } from './storage/StorageProvider'
+import { AuthProvider } from './auth/AuthProvider'
+import { WorkspaceProvider } from './workspace/WorkspaceProvider'
+import { PendoBridge } from './pendo/PendoBridge'
 
 /**
- * App root.
+ * App root — provider stack assembled per FND-07 ordering.
  *
- * MantineProvider wraps everything so downstream plans (Plan 04: provider stack,
- * Plan 06: UI primitives) can use Mantine components and hooks without additional setup.
+ * Stack order (outermost → innermost):
+ *   MantineProvider → StorageProvider → AuthProvider → WorkspaceProvider → PendoBridge → <children>
  *
- * Plan 04 will insert StorageProvider / AuthProvider / WorkspaceProvider / PendoBridge /
- * RouterProvider between MantineProvider and the page body (RESEARCH.md Pattern 1).
- * This file is intentionally thin to make that refactor straightforward.
+ * Each inner provider may safely consume services from providers above it in the tree.
+ *
+ * Downstream plan integration notes:
+ *   - Plan 05 (Router): replaces the Container placeholder body inside PendoBridge
+ *     with RouterProvider
+ *   - Phase 2 (Auth): replaces AuthProvider body with real Zustand-backed auth; App.tsx unchanged
+ *   - Phase 4 (Workspace): replaces WorkspaceProvider body with real persistence; App.tsx unchanged
+ *   - Phase 6 (Pendo): replaces PendoBridge body with snippet load + pendo.initialize; App.tsx unchanged
  */
 export default function App(): React.JSX.Element {
   return (
     <MantineProvider theme={haloTheme} defaultColorScheme="light">
-      <Container size="md" py="xl">
-        <Stack gap="md">
-          <Title order={1}>Halo</Title>
-          <Text>
-            Phase 1 scaffold — Mantine, providers, router, and primitives arrive in later plans.
-          </Text>
-        </Stack>
-      </Container>
+      <StorageProvider>
+        <AuthProvider>
+          <WorkspaceProvider>
+            <PendoBridge>
+              {/* Plan 05 replaces this with <RouterProvider router={router} /> */}
+              <Container size="md" py="xl">
+                <Stack gap="md">
+                  <Title order={1}>Halo</Title>
+                  <Text>
+                    Phase 1 scaffold — provider stack wired; router and page tree arrive in Plan 05.
+                  </Text>
+                </Stack>
+              </Container>
+            </PendoBridge>
+          </WorkspaceProvider>
+        </AuthProvider>
+      </StorageProvider>
     </MantineProvider>
   )
 }
