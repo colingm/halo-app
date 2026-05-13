@@ -7,7 +7,7 @@
 
 ### Foundation (cross-cutting)
 
-- [ ] **FND-01**: Vite + React 18 + TypeScript scaffold runs locally via `npm run dev`
+- [x] **FND-01**: Vite + React 18 + TypeScript scaffold runs locally via `npm run dev`
 - [ ] **FND-02**: Mantine 7 is wired in with a Halo-branded theme (color, font, AppShell baseline) so every page looks like a real SaaS
 - [ ] **FND-03**: React Router 6 is configured with History API routing (no hash routes); a hard split exists between a public layout and an authenticated `/app/*` layout
 - [ ] **FND-04**: All persistent data lives in `localStorage` behind a namespaced versioned key scheme (`halo:v1:<domain>[:scopeId]`); every read is Zod-validated and falls back safely on parse failure
@@ -162,7 +162,7 @@ Per-requirement mapping to phases. Every v1 requirement is mapped to exactly one
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FND-01 | Phase 1 | Pending |
+| FND-01 | Phase 1 | Complete |
 | FND-02 | Phase 1 | Pending |
 | FND-03 | Phase 1 | Pending |
 | FND-04 | Phase 1 | Pending |

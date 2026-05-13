@@ -41,7 +41,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 6 plans
 Plans:
 **Wave 1**
-- [ ] 01-01-PLAN.md — Vite + React 19 + TypeScript scaffold (FND-01)
+- [x] 01-01-PLAN.md — Vite + React 19 + TypeScript scaffold (FND-01)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 01-02-PLAN.md — Mantine 9 + Halo theme + ColorSchemeScript (FND-02)
