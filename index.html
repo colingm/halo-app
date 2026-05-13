@@ -5,6 +5,10 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Halo</title>
+    <!-- Mantine ColorSchemeScript: sets data-mantine-color-scheme on <html> before paint
+         to prevent dark-mode FOUC. For SPA-only (no SSR), an inline script is the
+         equivalent of Mantine's ColorSchemeScript component. -->
+    <script>document.documentElement.setAttribute('data-mantine-color-scheme', 'light');</script>
   </head>
   <body>
     <div id="root"></div>
