@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Completed 02-06-PLAN.md (route guards + signup shell + five placeholder pages + router wiring)
-last_updated: "2026-05-14T15:49:15.184Z"
+last_updated: "2026-05-14T15:55:37.223Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 16
-  completed_plans: 13
-  percent: 81
+  completed_plans: 14
+  percent: 88
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-13)
 ## Current Position
 
 Phase: 02 (registration-sign-in) — EXECUTING
-Plan: 8 of 10
+Plan: 9 of 10
 Status: Ready to execute
 Last activity: 2026-05-14
 
-Progress: [████████░░] 81%
+Progress: [█████████░] 88%
 
 ## Performance Metrics
 
@@ -65,6 +65,7 @@ Progress: [████████░░] 81%
 | Phase 02 P05 | 4min | 2 tasks | 3 files |
 | Phase Phase 02 PP06 | 7min | 2 tasks | 10 files |
 | Phase 02 P07 | 6min | 1 tasks | 4 files |
+| Phase 02 P08 | 3min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -106,6 +107,11 @@ Recent decisions affecting current work:
 - [Phase ?]: Phase 02-07: src/ui/primitives/Button.tsx typed props extended with React.ButtonHTMLAttributes<HTMLButtonElement> so type='submit' type-checks. Mirrors Anchor wrapper's HTML-attrs pattern. Mantine Button polymorphic typing surfaces button attrs at runtime but not statically — needed for <form onSubmit> participation.
 - [Phase ?]: Phase 02-07: Duplicate-email error uses a string-compare against EMAIL_DUPLICATE_MESSAGE rather than a parallel form-state flag — keeps conditional inline <Anchor>Sign in instead?</Anchor> render branchable from form.formState alone; locked message text becomes load-bearing and is documented explicitly.
 - [Phase ?]: Phase 02-07: RHF useForm mode 'onSubmit' (not onBlur/onChange) — UI-SPEC explicitly locks 'validates on Next' rhythm. Per-keystroke validation rejected by the rhythm spec.
+- [Phase ?]: Phase 02-08: RHF + Mantine controlled-input bridge for Select/NumberInput uses form.watch + form.setValue (not Controller) — shorter, mirrors plan reference snippet verbatim
+- [Phase ?]: Phase 02-08: defaultValues typed via 'as Partial<StepNValues> as StepNValues' double cast — canonical RHF + Zod-strict-mode escape when spreading partial sessionStorage slice into RHF's DeepPartial-strict TFieldValues
+- [Phase ?]: Phase 02-08: Step-gate Navigate placed in page body, not React Router loader — keeps Plan 02-06's router config free of per-step gate logic; replace=true on Navigate so browser back doesn't bounce user into gated page
+- [Phase ?]: Phase 02-08: Step 3 prior-step gate redirects to /signup (wizard root) on EITHER step1 OR step2 miss — not partial recovery to /signup/details. SessionStorage retention ensures re-entering at /signup resumes from the missing step
+- [Phase ?]: Phase 02-08: Back button styled variant=default (gray-bordered) over variant=subtle — UI-SPEC permits either; default reads as 'secondary button' (more conventional wizard Back affordance) vs subtle's tertiary ghost-button feel
 
 ### Pending Todos
 
@@ -126,6 +132,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T15:48:41.486Z
+Last session: 2026-05-14T15:55:04.911Z
 Stopped at: Completed 02-06-PLAN.md (route guards + signup shell + five placeholder pages + router wiring)
 Resume file: None
