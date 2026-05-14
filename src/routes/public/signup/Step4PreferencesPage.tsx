@@ -37,6 +37,8 @@ import {
   type Step4Values,
   createVisitor,
   createWorkspace,
+  findVisitorByEmail,
+  findVisitorByUsername,
   useAuthStore,
   readWizardDraft,
   writeWizardDraftStep,
@@ -72,7 +74,15 @@ export function Step4PreferencesPage(): React.JSX.Element {
     return <Navigate to="/signup" replace />
   }
 
-  const [submitError, setSubmitError] = useState<null | 'generic_failure'>(null)
+  // WR-03: completion can fail for three reasons now —
+  //   - 'generic_failure': Zod re-validation throw, write failure, or
+  //     unexpected exception inside signInFromVisitor (existing behavior)
+  //   - 'duplicate_email': a parallel tab beat this one to createVisitor
+  //     between Step-1's uniqueness check and Step-4's submit
+  //   - 'duplicate_username': same race, but on the username field
+  const [submitError, setSubmitError] = useState<
+    null | 'generic_failure' | 'duplicate_email' | 'duplicate_username'
+  >(null)
 
   const form = useForm<Step4Values>({
     resolver: zodResolver(step4Schema),
@@ -115,6 +125,22 @@ export function Step4PreferencesPage(): React.JSX.Element {
       const s1 = step1Schema.parse({ ...freshDraft.step1, password: plaintextPassword })
       const s2 = step2Schema.parse(freshDraft.step2)
       const s3 = step3Schema.parse(freshDraft.step3)
+
+      // WR-03: re-check email + username uniqueness immediately before
+      // createVisitor. Step 1's check is still the primary surface (inline
+      // anchor + locked copy on the email field), but a parallel-tab race
+      // can complete a second wizard with the same credentials between
+      // Step 1's check and Step 4's submit — without this re-check the
+      // duplicate would write a second visitor that findVisitorByEmail
+      // silently shadows. Surface as a form-level Alert and abort.
+      if (findVisitorByEmail(s1.email)) {
+        setSubmitError('duplicate_email')
+        return
+      }
+      if (findVisitorByUsername(s1.username)) {
+        setSubmitError('duplicate_username')
+        return
+      }
 
       // Create the visitor — authRepo.createVisitor hashes the password
       // internally (Plan 02-03's contract). Returned Visitor has only
@@ -178,6 +204,16 @@ export function Step4PreferencesPage(): React.JSX.Element {
       {submitError === 'generic_failure' && (
         <Alert icon={<IconAlertCircle size={18} />} color="red" variant="light">
           Something went wrong — please try again.
+        </Alert>
+      )}
+      {submitError === 'duplicate_email' && (
+        <Alert icon={<IconAlertCircle size={18} />} color="red" variant="light">
+          An account with this email already exists.
+        </Alert>
+      )}
+      {submitError === 'duplicate_username' && (
+        <Alert icon={<IconAlertCircle size={18} />} color="red" variant="light">
+          That username is taken — try another.
         </Alert>
       )}
       <form onSubmit={onSubmit} noValidate>
