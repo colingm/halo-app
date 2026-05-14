@@ -11,10 +11,20 @@ import type { PendoId } from '../../pendo/PENDO_IDS'
  * adoption analytics. No Pendo runtime is invoked here — the attribute is
  * purely a markup contract.
  */
-export type ButtonProps = MantineButtonProps & {
-  pendoId: PendoId
-  children: React.ReactNode
-}
+/**
+ * The Halo Button supports both Mantine props (variant, color, loading,
+ * leftSection, etc.) AND the underlying `<button>` element's HTML attributes
+ * (most importantly `type="submit"` so wrapped buttons participate in forms).
+ * Mantine's polymorphic typing surfaces `type` via the runtime polymorphic
+ * resolver, but the static intersection used here exposes the attribute set
+ * directly — mirroring the Anchor wrapper's `React.AnchorHTMLAttributes`
+ * intersection.
+ */
+export type ButtonProps = MantineButtonProps &
+  Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof MantineButtonProps> & {
+    pendoId: PendoId
+    children: React.ReactNode
+  }
 
 export function Button({ pendoId, ...rest }: ButtonProps) {
   return <MantineButton data-pendo-id={pendoId} {...rest} />

@@ -11,12 +11,14 @@
     "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@mantine/core": "^9.2.0",
     "@mantine/hooks": "^9.2.0",
     "@tabler/icons-react": "^3.44.0",
     "nanoid": "^5.1.11",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-hook-form": "^7.75.0",
     "react-router": "^7.15.0",
     "zod": "^4.4.3",
     "zustand": "^5.0.13"
