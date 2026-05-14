@@ -82,7 +82,7 @@ Plans:
 **Plans**: 6 plans
 Plans:
 **Wave 1**
-- [ ] 03-01-PLAN.md — Install recharts + @faker-js/faker runtime deps + add K.tasks(workspaceId) storage-key builder (DASH-03)
+- [x] 03-01-PLAN.md — Install recharts + @faker-js/faker runtime deps + add K.tasks(workspaceId) storage-key builder (DASH-03)
 - [ ] 03-02-PLAN.md — Task schemas + types + tasksRepo + labels + barrel (DASH-02)
 
 **Wave 2** *(blocked on Wave 1 completion)*
@@ -141,7 +141,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. Foundation & Cross-Cutting Contracts | 3/6 | In Progress|  |
 | 2. Registration & Sign-In | 10/10 | Complete    | 2026-05-14 |
-| 3. Authenticated Shell & Dashboard | 0/6 | Planned     | - |
+| 3. Authenticated Shell & Dashboard | 1/6 | In Progress|  |
 | 4. Core Pages (Lists, Settings, Reports) | 0/TBD | Not started | - |
 | 5. Team, Help & Polish | 0/TBD | Not started | - |
 | 6. Pendo Install & Wiring | 0/TBD | Not started | - |
