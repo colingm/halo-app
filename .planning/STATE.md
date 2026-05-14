@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: "01-05-PLAN.md complete — React Router 7 + public/app route split verified: DemoBanner on / only, /app deep-link survives refresh, console clean"
-last_updated: "2026-05-14T13:46:42.114Z"
+stopped_at: Completed 01-06-PLAN.md — PENDO_IDS registry + primitives + sandbox + conventions; human-verify approved
+last_updated: "2026-05-14T14:03:54.600Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 6
@@ -57,6 +57,7 @@ Progress: [██████████] 100%
 | Phase 01 P04 | 16min | 3 tasks | 7 files |
 | Phase Phase 01 PPlan 05 | 15min | - tasks | - files |
 | Phase 01 P06 | 8 | 2 tasks | 9 files |
+| Phase 01 P06 | 8 | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,7 @@ Recent decisions affecting current work:
 - 2026-05-13: User decision — defer all Pendo *runtime* (PEN-01..06) to a new end-of-milestone Phase 6 ("Pendo Install & Wiring"). Phases 1–5 build a Pendo-*ready* app (selector registry, `data-pendo-id` markup contract, SVG-only charting convention, masked-input primitive with `.pendo-sr-ignore` class) without any live Pendo wiring. Provider stack reserves the `PendoBridge` slot as a no-op pass-through stub.
 - [Phase ?]: FND-07 satisfied: provider stack assembled as thin Phase 1 stubs (Storage→Auth→Workspace→PendoBridge); each phase replaces provider body without touching App.tsx
 - [Phase ?]: 01-05: react-router@7.15 installed (unified react-router package); two-layout route split (/ PublicLayout + /app AppLayout); DemoBanner on public layout only; Phase 6 PendoRouteBridge slot reserved via TODO comments
+- [Phase ?]: PasswordInput applies .pendo-sr-ignore CSS class (NOT data-pendo-mask attribute) per Pendo SDK 2.324.0 verified source
 
 ### Pending Todos
 
@@ -91,6 +93,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T13:46:42.105Z
-Stopped at: 01-05-PLAN.md complete — React Router 7 + public/app route split verified: DemoBanner on / only, /app deep-link survives refresh, console clean
+Last session: 2026-05-14T14:03:54.593Z
+Stopped at: Completed 01-06-PLAN.md — PENDO_IDS registry + primitives + sandbox + conventions; human-verify approved
 Resume file: None

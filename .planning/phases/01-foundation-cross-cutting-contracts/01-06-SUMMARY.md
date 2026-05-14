@@ -94,7 +94,7 @@ completed: 2026-05-14
 
 1. **Task 1: PENDO_IDS registry + four primitives + CONVENTIONS.md** — `6178e93` (feat)
 2. **Task 2: PrimitivesSandbox + /sandbox route** — `b0e4da8` (feat)
-3. **Task 3: Human verification (checkpoint)** — pending; no file changes
+3. **Task 3: Human verification (checkpoint)** — approved; all four primitives carry data-pendo-id values; PasswordInput root has pendo-sr-ignore class; console clean
 
 ## Files Created/Modified
 
