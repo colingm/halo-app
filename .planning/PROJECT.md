@@ -16,15 +16,13 @@ A convincing, multi-page SaaS surface that a Pendo customer or pre-sales enginee
 
 <!-- Shipped and confirmed valuable. -->
 
-(None yet — ship to validate)
+- [x] Multi-step registration flow capturing basic identity, personal details, company info, and onboarding preferences (becomes Pendo visitor + account metadata) — *Validated in Phase 2: registration-sign-in*
+- [x] Fake email/password sign-in backed by local storage (no real auth, no backend) — *Validated in Phase 2: registration-sign-in*
+- [x] Multi-tenant model: every visitor belongs to a workspace/company; Pendo init receives both visitor and account IDs — *Validated in Phase 2: registration-sign-in (visitor + workspace records wired; Pendo init wiring carries into Phase 3 shell)*
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
-
-- [ ] Multi-step registration flow capturing basic identity, personal details, company info, and onboarding preferences (becomes Pendo visitor + account metadata)
-- [ ] Fake email/password sign-in backed by local storage (no real auth, no backend)
-- [ ] Multi-tenant model: every visitor belongs to a workspace/company; Pendo init receives both visitor and account IDs
 - [ ] Authenticated SaaS shell with persistent side navigation across all pages
 - [ ] Dashboard with charts/graphs over fabricated project/task data
 - [ ] Lists page where users can create, edit, reorder, and delete items (interactive surface)
@@ -99,4 +97,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-13 after initialization*
+*Last updated: 2026-05-14 after Phase 2 (registration-sign-in) completion*
