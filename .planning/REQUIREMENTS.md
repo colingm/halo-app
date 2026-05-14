@@ -29,7 +29,7 @@
 
 ### Authentication & Registration
 
-- [ ] **AUTH-01**: User can sign up via a multi-step wizard, each step at its own URL: `/signup` (identity), `/signup/details` (personal details), `/signup/company` (company info), `/signup/preferences` (onboarding preferences)
+- [x] **AUTH-01**: User can sign up via a multi-step wizard, each step at its own URL: `/signup` (identity), `/signup/details` (personal details), `/signup/company` (company info), `/signup/preferences` (onboarding preferences)
 - [x] **AUTH-02**: Step 1 captures basic identity: email, password, first name, last name, username
 - [x] **AUTH-03**: Step 2 captures personal details: job title, role, years of experience, location
 - [x] **AUTH-04**: Step 3 captures company info: company name, company size, industry, plan tier (free / pro / enterprise)
@@ -40,7 +40,7 @@
 - [x] **AUTH-09**: User can sign in with email and password on a `/signin` page; password match is performed against the stored SHA-256 hash
 - [x] **AUTH-10**: Authenticated session persists across browser refresh (auth state hydrated from localStorage on boot)
 - [x] **AUTH-11**: User can sign out from the top-bar user menu; sign-out clears the in-memory session, resets Pendo, and returns the user to the public landing
-- [ ] **AUTH-12**: A `RequireAuth` route guard redirects unauthenticated users from `/app/*` to `/signin`; a `RequireAnon` guard redirects authenticated users away from signup/signin to `/app`
+- [x] **AUTH-12**: A `RequireAuth` route guard redirects unauthenticated users from `/app/*` to `/signin`; a `RequireAnon` guard redirects authenticated users away from signup/signin to `/app`
 
 ### App Shell & Navigation
 
@@ -175,7 +175,7 @@ Per-requirement mapping to phases. Every v1 requirement is mapped to exactly one
 | PEN-07 | Phase 1 | Complete |
 | PEN-08 | Phase 1 | Complete |
 | PEN-09 | Phase 1 | Complete |
-| AUTH-01 | Phase 2 | Pending |
+| AUTH-01 | Phase 2 | Complete |
 | AUTH-02 | Phase 2 | Complete |
 | AUTH-03 | Phase 2 | Complete |
 | AUTH-04 | Phase 2 | Complete |
@@ -186,7 +186,7 @@ Per-requirement mapping to phases. Every v1 requirement is mapped to exactly one
 | AUTH-09 | Phase 2 | Complete |
 | AUTH-10 | Phase 2 | Complete |
 | AUTH-11 | Phase 2 | Complete |
-| AUTH-12 | Phase 2 | Pending |
+| AUTH-12 | Phase 2 | Complete |
 | PEN-03 | Phase 6 | Pending |
 | SHELL-01 | Phase 3 | Pending |
 | SHELL-02 | Phase 3 | Pending |

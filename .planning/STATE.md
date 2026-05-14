@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-05-PLAN.md (auth Zustand store + AuthProvider replacement)
-last_updated: "2026-05-14T15:33:12.140Z"
+stopped_at: Completed 02-06-PLAN.md (route guards + signup shell + five placeholder pages + router wiring)
+last_updated: "2026-05-14T15:40:37.158Z"
 last_activity: 2026-05-14
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 16
-  completed_plans: 11
-  percent: 69
+  completed_plans: 12
+  percent: 75
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-05-13)
 ## Current Position
 
 Phase: 02 (registration-sign-in) — EXECUTING
-Plan: 6 of 10
+Plan: 7 of 10
 Status: Ready to execute
 Last activity: 2026-05-14
 
-Progress: [███████░░░] 69%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
@@ -63,6 +63,7 @@ Progress: [███████░░░] 69%
 | Phase Phase 02 PP03 | 4min | 2 tasks tasks | 5 files files |
 | Phase 02 P04 | 4min | 1 tasks | 2 files |
 | Phase 02 P05 | 4min | 2 tasks | 3 files |
+| Phase Phase 02 PP06 | 7min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,12 @@ Recent decisions affecting current work:
 - [Phase ?]: Phase 02-05: Module-init hydrateAuthFromStorage() call ensures route guards see isAuthenticated on first render (AUTH-10 ordering invariant); mirrors Plan 01-03's runMigrations() placement
 - [Phase ?]: Phase 02-05: Single 'invalid_credentials' failure variant in signInWithCredentials defends against username enumeration via API surface (T-02-21)
 - [Phase ?]: Phase 02-05: Orphan-session self-heal during hydration removes bad session keys pointing at missing visitors/workspaces (defensive against DevTools edits / stale demo state)
+- [Phase ?]: Phase 02-06: Route guards subscribe directly to useAuthStore (single-slice selector) rather than useAuth() — removes AuthProvider-ordering dependency and limits re-renders to isAuthenticated boolean flips
+- [Phase ?]: Phase 02-06: RequireAnon explicitly skips / and /sandbox — signed-in users can still visit the public landing and primitive sandbox per UI-SPEC
+- [Phase ?]: Phase 02-06: Phase 2 ships zero ?next= return-URL surface (T-02-26 mitigate-by-avoidance); future-phase contract documented in RequireAuth.tsx JSDoc
+- [Phase ?]: Phase 02-06: SignupShell Stepper active index derived from useLocation().pathname not form state — refresh on /signup/company always shows step 3 highlighted
+- [Phase ?]: Phase 02-06: One PENDO_IDS.signup.step1.signinAnchor reused across all four signup steps — the registry intentionally defines exactly one signin-anchor
+- [Phase ?]: Phase 02-06: /app uses two-level RequireAuth → pathless AppLayout → AppPlaceholder route nesting so AppLayout contributes its Outlet without claiming a URL segment
 
 ### Pending Todos
 
@@ -114,6 +121,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-14T15:33:12.136Z
-Stopped at: Completed 02-05-PLAN.md (auth Zustand store + AuthProvider replacement)
+Last session: 2026-05-14T15:40:37.154Z
+Stopped at: Completed 02-06-PLAN.md (route guards + signup shell + five placeholder pages + router wiring)
 Resume file: None
