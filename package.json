@@ -14,6 +14,7 @@
     "@mantine/core": "^9.2.0",
     "@mantine/hooks": "^9.2.0",
     "@tabler/icons-react": "^3.44.0",
+    "nanoid": "^5.1.11",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router": "^7.15.0",
