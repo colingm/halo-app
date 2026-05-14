@@ -55,10 +55,14 @@ import { PENDO_IDS } from '../../../pendo/PENDO_IDS'
  * fallback keeps the Stepper from ever rendering an undefined index.
  */
 function pathToStepIndex(pathname: string): number {
+  // WR-06: strict equality (with optional trailing-slash variant), NOT
+  // startsWith. A future nested route like /signup/details/edit or
+  // /signup/company-confirm would silently match the wrong step under
+  // startsWith and highlight the wrong Stepper position.
   if (pathname === '/signup' || pathname === '/signup/') return 0
-  if (pathname.startsWith('/signup/details')) return 1
-  if (pathname.startsWith('/signup/company')) return 2
-  if (pathname.startsWith('/signup/preferences')) return 3
+  if (pathname === '/signup/details' || pathname === '/signup/details/') return 1
+  if (pathname === '/signup/company' || pathname === '/signup/company/') return 2
+  if (pathname === '/signup/preferences' || pathname === '/signup/preferences/') return 3
   return 0
 }
 
