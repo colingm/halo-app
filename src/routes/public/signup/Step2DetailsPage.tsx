@@ -113,13 +113,28 @@ export function Step2DetailsPage(): React.JSX.Element {
             min={0}
             max={60}
             value={form.watch('yearsExperience') ?? ''}
-            onChange={(value) =>
+            onChange={(value) => {
+              // Mantine's NumberInput hands back '' (empty string) when the
+              // user clears the field. Coercing '' → Number('') → 0 would
+              // silently write a value the user never typed AND would bypass
+              // the locked "Enter a number — …" copy on z.number({message}).
+              // Preserve `undefined` for empty / non-numeric input so the
+              // schema's z.number typecheck fires the locked Zod copy.
+              if (value === '' || value === null || value === undefined) {
+                form.setValue(
+                  'yearsExperience',
+                  undefined as unknown as number,
+                  { shouldValidate: false },
+                )
+                return
+              }
+              const n = typeof value === 'number' ? value : Number(value)
               form.setValue(
                 'yearsExperience',
-                typeof value === 'number' ? value : Number(value),
+                Number.isFinite(n) ? n : (undefined as unknown as number),
                 { shouldValidate: false },
               )
-            }
+            }}
             error={form.formState.errors.yearsExperience?.message}
             pendoId={PENDO_IDS.signup.step2.yearsExperience}
           />

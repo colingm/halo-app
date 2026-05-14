@@ -198,13 +198,28 @@ export function Step4PreferencesPage(): React.JSX.Element {
             min={1}
             max={10000}
             value={form.watch('teamSize') ?? ''}
-            onChange={(value) =>
+            onChange={(value) => {
+              // Mantine's NumberInput hands back '' (empty string) when the
+              // user clears the field. Coercing '' → Number('') → 0 would
+              // silently write a value the user never typed AND would surface
+              // an unlocked Zod min(1) message instead of the locked
+              // "Enter a number — 1 if it's just you." copy. Preserve
+              // `undefined` so z.number({message}) fires the locked copy.
+              if (value === '' || value === null || value === undefined) {
+                form.setValue(
+                  'teamSize',
+                  undefined as unknown as number,
+                  { shouldValidate: false },
+                )
+                return
+              }
+              const n = typeof value === 'number' ? value : Number(value)
               form.setValue(
                 'teamSize',
-                typeof value === 'number' ? value : Number(value),
+                Number.isFinite(n) ? n : (undefined as unknown as number),
                 { shouldValidate: false },
               )
-            }
+            }}
             error={form.formState.errors.teamSize?.message}
             pendoId={PENDO_IDS.signup.step4.teamSize}
           />
