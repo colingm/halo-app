@@ -5,14 +5,24 @@
  * Phase 1 wired the bare shell:
  *   - `/`            → PublicLayout (DemoBanner + Container) → Landing
  *   - `/sandbox`     → PrimitivesSandbox (under PublicLayout)
- *   - `/app`         → AppLayout → AppPlaceholder
+ *   - `/app`         → AppLayout (Phase 3 replaced placeholder with Dashboard)
  *
- * Phase 2 added the following routes (current state):
+ * Phase 2 added the following routes:
  *   - `/signup`               → SignupShell → Step1AccountPage      (index)
  *   - `/signup/details`       → SignupShell → Step2DetailsPage
  *   - `/signup/company`       → SignupShell → Step3CompanyPage
  *   - `/signup/preferences`   → SignupShell → Step4PreferencesPage
  *   - `/signin`               → SignInPage
+ *
+ * Phase 3 replaces the Phase 1 index with a real Dashboard and adds
+ * five named children under AppLayout — the full authenticated route tree:
+ *   - `/app`          → AppLayout → Dashboard (index)
+ *   - `/app/lists`    → AppLayout → ListsPage
+ *   - `/app/reports`  → AppLayout → ReportsPage
+ *   - `/app/team`     → AppLayout → TeamPage
+ *   - `/app/settings` → AppLayout → SettingsPage
+ *   - `/app/help`     → AppLayout → HelpPage
+ * AppPlaceholder.tsx has been deleted (replaced by Dashboard).
  *
  * The five new public routes are children of a `<RequireAnon>` wrapper-route
  * — signed-in users are redirected to `/app`. The `/` and `/sandbox` routes
@@ -24,12 +34,12 @@
  * AppLayout sits as a pathless intermediate layout-route so its `<Outlet />`
  * still mounts the index child.
  *
- * Phase 6 — NOT Phase 2 — adds PendoRouteBridge mounts inside PublicLayout
- * and AppLayout. Phase 1 reserved that slot; Phase 2 does not touch it.
+ * Phase 6 — NOT Phase 3 — adds PendoRouteBridge mounts inside PublicLayout
+ * and AppLayout. Phase 3 deliberately does not include it.
  *
  * FND-03: History API routing (createBrowserRouter, NOT createHashRouter).
  * The Vite dev server's default SPA fallback serves index.html on every
- * path, so refreshing on `/signup/company` works without server-side
+ * path, so refreshing on `/app/reports` works without server-side
  * routing logic.
  */
 import { createBrowserRouter } from 'react-router'
@@ -37,7 +47,12 @@ import { PublicLayout } from './routes/public/PublicLayout'
 import { Landing } from './routes/public/Landing'
 import { PrimitivesSandbox } from './routes/public/PrimitivesSandbox'
 import { AppLayout } from './routes/app/AppLayout'
-import { AppPlaceholder } from './routes/app/AppPlaceholder'
+import { Dashboard } from './dashboard/Dashboard'
+import { ListsPage } from './routes/app/lists/ListsPage'
+import { ReportsPage } from './routes/app/reports/ReportsPage'
+import { TeamPage } from './routes/app/team/TeamPage'
+import { SettingsPage } from './routes/app/settings/SettingsPage'
+import { HelpPage } from './routes/app/help/HelpPage'
 import { RequireAuth, RequireAnon } from './auth'
 import { SignupShell } from './routes/public/signup/SignupShell'
 import { Step1AccountPage } from './routes/public/signup/Step1AccountPage'
@@ -91,15 +106,18 @@ export const router = createBrowserRouter([
     Component: RequireAuth,
     children: [
       {
-        // Pathless layout route — AppLayout is the visual shell, but
-        // contributes no path segment. Its <Outlet /> renders the matching
-        // child (AppPlaceholder for the index).
+        // Pathless layout route — AppLayout is the visual shell (Mantine
+        // AppShell + side nav + top bar), but contributes no path segment.
+        // Its <Outlet /> renders the matching child: Dashboard for the index,
+        // or the appropriate placeholder page for named children.
         Component: AppLayout,
         children: [
-          {
-            index: true,
-            Component: AppPlaceholder,
-          },
+          { index: true,           Component: Dashboard },
+          { path: 'lists',         Component: ListsPage },
+          { path: 'reports',       Component: ReportsPage },
+          { path: 'team',          Component: TeamPage },
+          { path: 'settings',      Component: SettingsPage },
+          { path: 'help',          Component: HelpPage },
         ],
       },
     ],
