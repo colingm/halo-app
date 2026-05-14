@@ -44,6 +44,11 @@ export const K = {
   /** `halo:v1:workspaces` — array of Workspace records, one per registered visitor (Plan 02-03). */
   workspaces: (): string => `halo:v${SCHEMA_VERSION}:workspaces`,
 
+  /** `halo:v1:tasks:{workspaceId}` — per-workspace task array (Phase 3 seeder + Phase 4 CRUD).
+   *  Each workspace has its own bucket so the key namespace is forward-compatible with
+   *  multi-workspace switching (v2). */
+  tasks: (workspaceId: string): string => `halo:v${SCHEMA_VERSION}:tasks:${workspaceId}`,
+
   /** `halo:v1:session` — current Session record (visitorId + workspaceId + signedInAt). */
   session: (): string => `halo:v${SCHEMA_VERSION}:session`,
 
