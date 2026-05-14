@@ -91,7 +91,7 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 03-05-PLAN.md — AppLayout Mantine AppShell rewrite + router /app children wiring + delete AppPlaceholder (SHELL-01, SHELL-03, SHELL-04)
-- [ ] 03-06-PLAN.md — Dashboard page: 5 KPI cards + Recharts AreaChart + Recharts donut + SegmentedControl + Timeline + empty state (DASH-01, DASH-02, DASH-03, DASH-04, DASH-05, DASH-06)
+- [x] 03-06-PLAN.md — Dashboard page: 5 KPI cards + Recharts AreaChart + Recharts donut + SegmentedControl + Timeline + empty state (DASH-01, DASH-02, DASH-03, DASH-04, DASH-05, DASH-06)
 **UI hint**: yes
 
 ### Phase 4: Core Pages (Lists, Settings, Reports)
@@ -141,7 +141,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|----------------|--------|-----------|
 | 1. Foundation & Cross-Cutting Contracts | 3/6 | In Progress|  |
 | 2. Registration & Sign-In | 10/10 | Complete    | 2026-05-14 |
-| 3. Authenticated Shell & Dashboard | 4/6 | In Progress|  |
+| 3. Authenticated Shell & Dashboard | 5/6 | In Progress|  |
 | 4. Core Pages (Lists, Settings, Reports) | 0/TBD | Not started | - |
 | 5. Team, Help & Polish | 0/TBD | Not started | - |
 | 6. Pendo Install & Wiring | 0/TBD | Not started | - |
