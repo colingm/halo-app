@@ -1,0 +1,17 @@
+/**
+ * TeamTable cell padding — per 05-UI-SPEC §"Team table":
+ *
+ *   padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+ *   (vertical sm = 12px, horizontal md = 16px)
+ *
+ * Uses Mantine spacing CSS-vars only — no raw px values per UI-SPEC §Spacing.
+ * Mirrors src/tasks/components/TaskTable.module.css exactly.
+ */
+
+.teamTable {
+  width: 100%;
+}
+
+.cell {
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+}
