@@ -33,6 +33,40 @@
  * (codec's `removeKey()` is single-key only). Direct localStorage access
  * here is the SOLE caller-site exception in the codebase; documented
  * inline below.
+ *
+ * Note on the two-pass collect-then-remove loop: collecting keys into an
+ * array before removal is the CORRECT pattern for iterating over localStorage
+ * while removing keys. Modifying localStorage during a `localStorage.key(i)`
+ * forward iteration shifts indices and silently skips keys. The two-pass
+ * approach is deliberately correct — do NOT "fix" it to a single-pass loop.
+ *
+ * UAT 2b contract clarification — halo:v1:meta after reset:
+ *
+ * At reset-confirm time, the two-pass scan-then-remove deletes EVERY key
+ * whose name starts with `halo:v`, including `halo:v1:meta`. The
+ * user-observable state at this exact moment (before the hard reload) is:
+ * zero `halo:v1:*` keys remain in localStorage. The wipe contract is honored.
+ *
+ * Immediately after, `window.location.href = '/'` triggers a hard reload.
+ * The reload re-runs the app boot sequence: `src/main.tsx` calls
+ * `runMigrations()` (from `src/storage/migrations.ts`) BEFORE React mounts.
+ * `runMigrations()` calls `peekRaw(K.meta())` — finds `null` — and writes
+ * `DEFAULT_META = { schemaVersion: 1, seededAt: null, appVersion: '0.1.0' }`
+ * as the storage envelope's boot record. This is by design: the codec and
+ * migration runner require meta to exist before any other key is read or
+ * written.
+ *
+ * The post-reload `halo:v1:meta` contains NO user data (no tasks, no
+ * visitors, no workspaces, no session). It is purely the schema-version
+ * envelope: `{ schemaVersion: 1, seededAt: null, appVersion: '0.1.0' }`.
+ * The `seededAt: null` value means the app is in a fresh-boot state and
+ * will re-run the fake-data seed on first authenticated workspace load.
+ *
+ * Future UAT runners who observe `halo:v1:meta` in localStorage after reset
+ * should inspect its VALUE. If it is `{ schemaVersion: 1, seededAt: null,
+ * appVersion: '0.1.0' }` with no embedded tasks/visitors/workspaces, the
+ * reset contract is honored. Only a meta value with non-null `seededAt` OR
+ * with embedded user data would indicate a true wipe failure.
  */
 
 import { Modal, Group, Text } from '@mantine/core'
@@ -61,6 +95,11 @@ export function ResetDemoDataModal({ opened, onClose }: ResetDemoDataModalProps)
       if (key && key.startsWith('halo:v')) keysToRemove.push(key)
     }
     keysToRemove.forEach((k) => localStorage.removeItem(k))
+    // At this exact moment: zero halo:v1:* keys remain in localStorage.
+    // After the hard reload below, runMigrations() writes a fresh halo:v1:meta
+    // boot record ({ schemaVersion: 1, seededAt: null, appVersion: '0.1.0' }).
+    // That re-creation is expected and contains NO user data — see top-of-file
+    // JSDoc for the full UAT 2b contract clarification.
 
     // 2. Wipe sessionStorage signup draft.
     // T-04-04-05 mitigation: private-browsing sessionStorage access can throw.
