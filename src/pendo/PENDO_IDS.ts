@@ -274,6 +274,26 @@ export const PENDO_IDS = {
       cta:       'team.empty-state.cta',
     },
   },
+
+  /** Phase 5 Help page targets — D-14. */
+  help: {
+    search: 'help.search',
+    topic: {
+      container: 'help.topic.container',
+    },
+    article: {
+      // Dynamic-list parameterization: consumers add data-pendo-article-slug={article.slug}.
+      row:            'help.article.row',
+      detailBackLink: 'help.article.detail-back-link',
+    },
+    emptyState: {
+      container: 'help.empty-state.container',
+    },
+    noResults: {
+      container: 'help.no-results.container',
+      clearLink: 'help.no-results.clear-link',
+    },
+  },
 } as const
 
 /**

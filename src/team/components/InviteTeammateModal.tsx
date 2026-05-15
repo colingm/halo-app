@@ -26,7 +26,6 @@ import { IconCheck } from '@tabler/icons-react'
 import { TextInput, Select, Button } from '../../ui/primitives'
 import { PENDO_IDS } from '../../pendo/PENDO_IDS'
 import { createTeammate, findTeammateByEmail } from '../teamsRepo'
-import type { WorkspaceRole } from '../types'
 
 export type InviteTeammateModalProps = {
   opened: boolean
@@ -131,8 +130,8 @@ export function InviteTeammateModal({
             ]}
             value={form.watch('workspaceRole') ?? null}
             onChange={(value) => {
-              if (value && (['Admin', 'Member', 'Viewer'] as const).includes(value as WorkspaceRole)) {
-                form.setValue('workspaceRole', value as WorkspaceRole, { shouldDirty: true })
+              if (value === 'Admin' || value === 'Member' || value === 'Viewer') {
+                form.setValue('workspaceRole', value, { shouldDirty: true })
               }
             }}
             allowDeselect={false}
