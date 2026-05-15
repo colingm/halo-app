@@ -90,8 +90,10 @@ export function AppLayout(): React.JSX.Element {
   const initials = `${visitor.firstName[0] ?? ''}${visitor.lastName[0] ?? ''}`.toUpperCase()
 
   const handleSignOut = async () => {
-    await useAuthStore.getState().signOut()
+    // Navigate first so RequireAuth doesn't intercept the synchronous
+    // isAuthenticated:false flush from signOut() and bounce through /signin.
     navigate('/', { replace: true })
+    await useAuthStore.getState().signOut()
   }
 
   return (
