@@ -25,7 +25,7 @@ import {
 import { NavLink } from '../../ui/primitives'
 import { PENDO_IDS } from '../../pendo/PENDO_IDS'
 import { useAuthStore } from '../../auth'
-import { seedIfNeeded } from '../../tasks'
+import { seedDemoData } from '../../seed/seedAll'
 
 /**
  * Active-route detection helper (per D-12 and UI-SPEC §"Navbar contents").
@@ -78,7 +78,7 @@ export function AppLayout(): React.JSX.Element {
    * §"Pattern S2").
    */
   useEffect(() => {
-    if (workspace) seedIfNeeded(workspace.id)
+    if (workspace) seedDemoData(workspace.id)
   }, [workspace?.id])
 
   // Defensive narrowing — RequireAuth (Phase 2 lock) already redirects

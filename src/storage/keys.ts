@@ -49,6 +49,10 @@ export const K = {
    *  multi-workspace switching (v2). */
   tasks: (workspaceId: string): string => `halo:v${SCHEMA_VERSION}:tasks:${workspaceId}`,
 
+  /** `halo:v1:teammates:{workspaceId}` — per-workspace teammate array (Phase 5 D-01).
+   *  Pattern mirrors K.tasks; no SCHEMA_VERSION bump because the key is additive. */
+  teammates: (workspaceId: string): string => `halo:v${SCHEMA_VERSION}:teammates:${workspaceId}`,
+
   /** `halo:v1:session` — current Session record (visitorId + workspaceId + signedInAt). */
   session: (): string => `halo:v${SCHEMA_VERSION}:session`,
 

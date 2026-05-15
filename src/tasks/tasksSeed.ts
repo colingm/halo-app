@@ -1,24 +1,28 @@
 /**
- * Halo tasks seeder (Phase 3 — first writer of meta.seededAt per FND-05).
+ * Halo tasks seeder (Phase 5 D-12 amendment — pure data writer).
  *
- * Generates ~40-60 faker tasks for the supplied workspace, gated on the
- * `meta.seededAt` flag so subsequent reloads never clobber user mutations
- * from Phase 4's LIST CRUD.
+ * Per Phase 5 D-12, the meta.seededAt stamp moves to src/seed/seedAll.ts
+ * which is the single owner of that flag after both seeders complete.
+ * tasksSeed is now a pure data writer (writeJSON to K.tasks only).
  *
- * Idempotency contract (D-04):
+ * Generates ~40-60 faker tasks for the supplied workspace, picking assignees
+ * from the just-seeded teammate list (D-04). Gated on the `meta.seededAt`
+ * flag (read-only check — the coordinator writes it) and a defensive
+ * tasks-existence check so subsequent reloads never clobber user mutations.
+ *
+ * Idempotency contract (D-04 + D-12):
  *   1. Read meta via readWithSchema(K.meta(), MetaSchema, DEFAULT_META)
  *   2. If meta.seededAt !== null: skip seeding entirely (primary gate).
  *   3. Else if listTasks(workspaceId).length > 0: skip (defensive guard;
  *      should not happen if seededAt is correctly null — protects against
  *      DevTools / external writes that stamped tasks without updating meta).
- *   4. Else: generate tasks, writeJSON(K.tasks(workspaceId), tasks),
- *      then stamp meta.seededAt = new Date().toISOString().
+ *   4. Else: read teammates, map to Assignee candidates, generate tasks,
+ *      writeJSON(K.tasks(workspaceId), tasks). DO NOT stamp meta.seededAt
+ *      here — that stamp belongs to the seedAll.ts coordinator (D-12).
  *
- * Caller: src/routes/app/AppLayout.tsx — invokes seedIfNeeded(workspaceId)
- * once on first authenticated mount per workspace via useEffect keyed on
- * workspace?.id. Module-init invocation is NOT used here (unlike
- * authStore.hydrateAuthFromStorage) because seeding requires a known
- * workspaceId, which is only available post-sign-in (render-time data).
+ * Caller: src/seed/seedAll.ts — invoked as seedTasksIfNeeded() after
+ * seedTeammatesIfNeeded(). AppLayout now calls seedDemoData() (the
+ * coordinator) instead of seedIfNeeded() directly (D-11).
  *
  * Per-key co-ownership (Pattern S4):
  *   tasksSeed.ts is the deliberate co-owner of K.tasks(workspaceId) alongside
@@ -35,7 +39,8 @@ import { faker } from '@faker-js/faker'
 import { nanoid } from 'nanoid'
 import { K, readWithSchema, writeJSON, MetaSchema, APP_VERSION, SCHEMA_VERSION } from '../storage'
 import { TasksArraySchema } from './schemas'
-import type { Task, TaskStatus, TaskPriority } from './types'
+import { TeammatesArraySchema } from '../team/schemas'
+import type { Task, TaskStatus, TaskPriority, Assignee } from './types'
 
 // ---------------------------------------------------------------------------
 // Default meta constant (mirrors migrations.ts DEFAULT_META shape)
@@ -65,7 +70,7 @@ function weightedPick<T>(options: T[], weights: number[]): T {
 // Task generator with D-05 date distribution
 // ---------------------------------------------------------------------------
 
-function generateTasks(count: number): Task[] {
+function generateTasks(count: number, assigneeCandidates: Assignee[]): Task[] {
   const now = new Date()
 
   const tasks: Task[] = Array.from({ length: count }, () => {
@@ -122,11 +127,9 @@ function generateTasks(count: number): Task[] {
       description,
       status,
       priority,
-      assignee: {
-        id: nanoid(),
-        name: faker.person.fullName(),
-        avatar: faker.image.avatar(),
-      },
+      assignee: assigneeCandidates.length > 0
+        ? faker.helpers.arrayElement(assigneeCandidates)
+        : { id: nanoid(), name: faker.person.fullName(), avatar: faker.image.avatar() },
       createdAt: createdAt.toISOString(),
       updatedAt,
       dueDate,
@@ -176,13 +179,24 @@ export function seedIfNeeded(workspaceId: string): void {
   const existing = readWithSchema(K.tasks(workspaceId), TasksArraySchema, [])
   if (existing.length > 0) return
 
+  // Read teammates seeded by seedTeammatesIfNeeded (D-04 ordering). The
+  // coordinator runs teammates first so this read should return a non-empty
+  // array. Defensive fallback: if empty (e.g. isolated call), tasks still
+  // seed but with minted assignees (D-04 defensive).
+  const teammates = readWithSchema(K.teammates(workspaceId), TeammatesArraySchema, [])
+  const assigneeCandidates: Assignee[] = teammates.map((t) => ({
+    id: t.id,
+    name: `${t.firstName} ${t.lastName}`.trim(),
+    ...(t.avatar ? { avatar: t.avatar } : {}),
+  }))
+
   // Generate 40–60 tasks with D-05 date distribution.
   const count = faker.number.int({ min: 40, max: 60 })
-  const tasks = generateTasks(count)
+  const tasks = generateTasks(count, assigneeCandidates)
 
-  // Write tasks, then stamp meta.seededAt (order matters — write data first,
-  // then mark as seeded; a crash between the two leaves tasks without a stamp,
-  // which is recoverable via GATE 2 on the next mount).
+  // Write tasks only. DO NOT stamp meta.seededAt here — the seedAll.ts
+  // coordinator stamps after BOTH seeders succeed (D-12). A crash between
+  // this write and the coordinator's stamp leaves tasks without a stamp,
+  // which is recoverable via GATE 2 on the next mount.
   writeJSON(K.tasks(workspaceId), tasks)
-  writeJSON(K.meta(), { ...meta, seededAt: new Date().toISOString() })
 }

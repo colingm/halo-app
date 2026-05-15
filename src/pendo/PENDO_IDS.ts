@@ -249,6 +249,31 @@ export const PENDO_IDS = {
     },
     csvExport: 'reports.csv-export',
   },
+
+  /** Phase 5 Team page targets — D-14. */
+  team: {
+    header: {
+      inviteButton: 'team.header.invite-button',
+    },
+    table: {
+      container: 'team.table.container',
+    },
+    row: {
+      // Dynamic-list parameterization: consumers add data-pendo-teammate-id={teammate.id}.
+      roleSelect: 'team.row.role-select',
+    },
+    invite: {
+      modalContainer: 'team.invite.modal-container',
+      modalEmail:     'team.invite.modal-email',
+      modalRole:      'team.invite.modal-role',
+      modalCancel:    'team.invite.modal-cancel',
+      modalSubmit:    'team.invite.modal-submit',
+    },
+    emptyState: {
+      container: 'team.empty-state.container',
+      cta:       'team.empty-state.cta',
+    },
+  },
 } as const
 
 /**
