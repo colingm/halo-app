@@ -18,7 +18,11 @@
  *      shared with the Dashboard via src/tasks/now-ref.ts).
  *   - Assignee: 'all'
  *   - Status: ['todo', 'in_progress', 'done'] (all three selected — equivalent
- *     to no status filter; deselecting all yields the empty state).
+ *     to no status filter). Deselecting every chip ALSO yields no filter
+ *     (empty array = match-all), matching the Lists `All` Select idiom — the
+ *     user cannot strand themselves in a recovery-less empty state by
+ *     deselecting all statuses. See 04-REVIEW.md CR-03 + 04-06-PLAN.md Task D
+ *     for the override of the original Phase 04-05 design note.
  *
  * Filter predicate: tasks are matched on `createdAt` against the date-range
  * bounds (the chart day-buckets and the table both anchor to createdAt so the
@@ -75,16 +79,28 @@ export function ReportsPage(): React.JSX.Element {
   const filteredTasks = useMemo(() => {
     return allTasks
       .filter((t) => {
-        if (dateRange[0] && dayjs(t.createdAt).isBefore(dayjs(dateRange[0]).startOf('day'))) {
+        // UTC-anchored date-range predicate: t.createdAt and the dateRange
+        // bounds are both interpreted as UTC instants so this filter agrees
+        // with ReportsChart's bucket axis (also UTC, post 04-06-PLAN.md Task C)
+        // on "what day is this task in." See 04-REVIEW.md CR-02.
+        if (
+          dateRange[0] &&
+          dayjs.utc(t.createdAt).isBefore(dayjs.utc(dateRange[0]).startOf('day'))
+        ) {
           return false
         }
-        if (dateRange[1] && dayjs(t.createdAt).isAfter(dayjs(dateRange[1]).endOf('day'))) {
+        if (
+          dateRange[1] &&
+          dayjs.utc(t.createdAt).isAfter(dayjs.utc(dateRange[1]).endOf('day'))
+        ) {
           return false
         }
         if (assignee !== 'all' && t.assignee?.id !== assignee) return false
-        // Empty status selection = no rows match (deselect-all yields empty state).
-        if (statusFilter.length === 0) return false
-        if (!statusFilter.includes(t.status)) return false
+        // Empty status selection = match-all (matches Lists' `All` Select idiom).
+        // Pre-04-06: empty array meant "filter out everything," which stranded
+        // users who deselected every Status chip with no recovery affordance.
+        // See 04-REVIEW.md CR-03 + 04-06-PLAN.md Task D for the override rationale.
+        if (statusFilter.length > 0 && !statusFilter.includes(t.status)) return false
         return true
       })
       .sort((a, b) => dayjs(b.createdAt).valueOf() - dayjs(a.createdAt).valueOf())

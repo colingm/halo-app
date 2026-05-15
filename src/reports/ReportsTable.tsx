@@ -7,8 +7,16 @@
  *   2. Status        — `<Badge color={TASK_STATUS_BADGE_COLOR[...]}>` (sortable)
  *   3. Priority      — `<Badge color={TASK_PRIORITY_BADGE_COLOR[...]}>` (sortable)
  *   4. Assignee      — `<Text size="sm">{task.assignee?.name ?? '—'}</Text>` (sortable)
- *   5. Due date      — `dayjs(...).format('MMM D, YYYY')` or '—' (sortable)
- *   6. Completed at  — `dayjs(...).format('MMM D, YYYY')` or '—' (sortable)
+ *   5. Due date      — `dayjs(value).utc().format('MMM D, YYYY')` or '—' (sortable)
+ *   6. Completed at  — `dayjs(value).utc().format('MMM D, YYYY')` or '—' (sortable)
+ *
+ * Both date cells are UTC-anchored (04-REVIEW.md CR-01, 04-06-PLAN.md Task B).
+ * `dueDate` is stored as `*.toISOString()` of a UTC-midnight Date so the read
+ * formatter must format in UTC to render the picked calendar day. `completedAt`
+ * is an instant (`new Date().toISOString()` at status→done); rendering it in
+ * UTC gives cross-column consistency with `dueDate` and matches the CSV column
+ * convention. Trade-off: a "completed at" instant in UTC is slightly less
+ * natural than local time, but internal consistency wins for this demo.
  *
  * No actions column (Reports is read-only — edits live on Lists per D-21).
  * No leading checkbox (no per-row mutation).
@@ -116,7 +124,7 @@ export function ReportsTable({ tasks }: ReportsTableProps): React.JSX.Element {
           const value = info.getValue()
           return (
             <Text size="sm">
-              {value ? dayjs(value as string).format('MMM D, YYYY') : '—'}
+              {value ? dayjs(value as string).utc().format('MMM D, YYYY') : '—'}
             </Text>
           )
         },
@@ -127,7 +135,7 @@ export function ReportsTable({ tasks }: ReportsTableProps): React.JSX.Element {
           const value = info.getValue()
           return (
             <Text size="sm">
-              {value ? dayjs(value as string).format('MMM D, YYYY') : '—'}
+              {value ? dayjs(value as string).utc().format('MMM D, YYYY') : '—'}
             </Text>
           )
         },

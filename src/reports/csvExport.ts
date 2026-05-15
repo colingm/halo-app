@@ -9,7 +9,11 @@
  *     (e.g. "To do", "In progress", "Done", "Low" .. "Urgent").
  *   - Assignee cell: `task.assignee?.name ?? ''` (empty string in CSV, NOT '—').
  *   - Date cells: `YYYY-MM-DD` (machine-readable ISO date) or empty string.
- *     Visual table displays `MMM D, YYYY` — CSV deliberately differs.
+ *     Visual table displays `MMM D, YYYY` — CSV deliberately differs. Both
+ *     formats use UTC-anchored dayjs (04-REVIEW.md CR-01, 04-06-PLAN.md Task B)
+ *     so the rendered/exported date matches the calendar day the user picked,
+ *     regardless of browser timezone. `dueDate` is stored as UTC midnight;
+ *     `completedAt` is the `*.toISOString()` instant at status→done.
  *   - Line separator: `\r\n` (RFC 4180 canonical).
  *   - Quoting: hand-rolled RFC 4180 — wrap a field in "..." when it contains
  *     `,`, `\n`, or `"`; escape internal `"` by doubling. No CSV library.
@@ -53,8 +57,8 @@ export function toCsv(rows: Task[]): string {
       quote(TASK_STATUS_LABELS[t.status]),
       quote(TASK_PRIORITY_LABELS[t.priority]),
       quote(t.assignee?.name ?? ''),
-      t.dueDate ? dayjs(t.dueDate).format('YYYY-MM-DD') : '',
-      t.completedAt ? dayjs(t.completedAt).format('YYYY-MM-DD') : '',
+      t.dueDate ? dayjs(t.dueDate).utc().format('YYYY-MM-DD') : '',
+      t.completedAt ? dayjs(t.completedAt).utc().format('YYYY-MM-DD') : '',
     ].join(','),
   )
   return [headers.join(','), ...lines].join('\r\n')

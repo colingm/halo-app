@@ -11,7 +11,10 @@
  *   3. Status — sortable, `<Badge color={TASK_STATUS_BADGE_COLOR[...]}>`.
  *   4. Priority — sortable, `<Badge color={TASK_PRIORITY_BADGE_COLOR[...]}>`.
  *   5. Assignee — sortable, plain `<Text size="sm">`.
- *   6. Due date — sortable, formatted via `dayjs("MMM D, YYYY")`.
+ *   6. Due date — sortable, UTC-anchored: `value ? dayjs(v).utc().format('MMM D, YYYY') : '—'`
+ *      (the stored dueDate is `*.toISOString()` UTC midnight; we render the
+ *      calendar day the user picked, independent of browser timezone.
+ *      See 04-REVIEW.md CR-01 and 04-06-PLAN.md Task B.)
  *   7. Trailing Actions (no header label) — Mantine `<Menu>` kebab with
  *      Edit + Delete items. The `<ActionIcon>` trigger AND each `<Menu.Item>`
  *      carry `data-pendo-id` + `data-pendo-task-id`.
@@ -161,7 +164,7 @@ export function TaskTable({
           const value = info.getValue()
           return (
             <Text size="sm">
-              {value ? dayjs(value).format('MMM D, YYYY') : '—'}
+              {value ? dayjs(value).utc().format('MMM D, YYYY') : '—'}
             </Text>
           )
         },
