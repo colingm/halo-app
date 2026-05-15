@@ -49,14 +49,22 @@ export function getTaskById(workspaceId: string, id: string): Task | undefined {
 /**
  * Persist a new `Task` record to `K.tasks(workspaceId)`. Returns the newly-created `Task`.
  * The repo fills `id` (nanoid), `createdAt`, and `updatedAt` automatically.
+ *
+ * D-09 invariant (symmetry with `updateTask`): if `input.status === 'done'` and the
+ * caller did not supply a `completedAt`, the repo stamps `completedAt` with `now`.
+ * UI code creating a task in the "done" state never has to think about the timestamp.
  */
 export function createTask(workspaceId: string, input: CreateTaskInput): Task {
   const now = new Date().toISOString()
+  const stamped: CreateTaskInput =
+    input.status === 'done' && input.completedAt == null
+      ? { ...input, completedAt: now }
+      : input
   const task: Task = {
     id: nanoid(),
     createdAt: now,
     updatedAt: now,
-    ...input,
+    ...stamped,
   }
   const existing = listTasks(workspaceId)
   writeJSON(K.tasks(workspaceId), [...existing, task])
@@ -66,6 +74,18 @@ export function createTask(workspaceId: string, input: CreateTaskInput): Task {
 /**
  * Apply `patch` to an existing task by id. Returns the updated `Task`, or
  * `undefined` if no task with the given id exists.
+ *
+ * D-09 invariant — `completedAt` is owned by the repo:
+ *   - When `patch.status === 'done'` and the existing task was not already 'done',
+ *     stamp `completedAt = now` (overrides any value the caller passed).
+ *   - When `patch.status` moves OFF 'done' (existing was 'done', patch is something
+ *     else), clear `completedAt = null` (overrides any value the caller passed).
+ *   - Otherwise leave `completedAt` alone (the caller may still patch it explicitly
+ *     for back-fill scenarios, but the common UI path — checkbox toggle, modal save —
+ *     never touches it).
+ *
+ * UI code (Lists checkbox, TaskFormModal, future drag-and-drop) MUST NOT manage
+ * `completedAt` itself — this invariant is the single source of truth.
  */
 export function updateTask(
   workspaceId: string,
@@ -75,7 +95,20 @@ export function updateTask(
   const existing = listTasks(workspaceId)
   const idx = existing.findIndex((t) => t.id === id)
   if (idx === -1) return undefined
-  const updated: Task = { ...existing[idx], ...patch, updatedAt: new Date().toISOString() }
+
+  // D-09: clone the patch locally before stamping completedAt so we never mutate
+  // the caller's object.
+  const stamped: Partial<Omit<Task, 'id' | 'createdAt'>> = { ...patch }
+  const prevStatus = existing[idx].status
+  if (stamped.status !== undefined) {
+    if (stamped.status === 'done' && prevStatus !== 'done') {
+      stamped.completedAt = new Date().toISOString()
+    } else if (stamped.status !== 'done' && prevStatus === 'done') {
+      stamped.completedAt = null
+    }
+  }
+
+  const updated: Task = { ...existing[idx], ...stamped, updatedAt: new Date().toISOString() }
   const next = [...existing]
   next[idx] = updated
   writeJSON(K.tasks(workspaceId), next)

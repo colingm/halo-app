@@ -177,3 +177,62 @@ export function createWorkspace(input: CreateWorkspaceInput): Workspace {
 
   return workspace
 }
+
+/**
+ * Apply `patch` to an existing visitor by id. Returns the updated `Visitor`, or
+ * `undefined` if no visitor with the given id exists.
+ *
+ * Defense per D-15: `passwordHash` is structurally omitted from the patch type so
+ * Settings UI cannot accidentally expose it. The `crypto.subtle.digest` hash is
+ * owned exclusively by `createVisitor` (Phase 2 D-09). `id` and `createdAt` are
+ * also immutable for invariant reasons (Zustand session keys against `id`).
+ *
+ * Pattern mirrors `tasksRepo.updateTask` cross-module: read array via the existing
+ * `listVisitors` (which routes through `readWithSchema` per FND-04) → find index →
+ * spread patch → writeJSON → return updated record. Visitor has no `updatedAt`
+ * field per `VisitorSchema`, so unlike `updateTask` there is no timestamp stamp.
+ *
+ * Non-atomic read-modify-write — same WR-04 caveat as `createVisitor`. Two
+ * concurrent tabs can clobber updates; acceptable for the single-user demo surface.
+ */
+export function updateVisitor(
+  id: string,
+  patch: Partial<Omit<Visitor, 'id' | 'passwordHash' | 'createdAt'>>,
+): Visitor | undefined {
+  const existing = listVisitors()
+  const idx = existing.findIndex((v) => v.id === id)
+  if (idx === -1) return undefined
+  const updated: Visitor = { ...existing[idx], ...patch }
+  const next = [...existing]
+  next[idx] = updated
+  writeJSON(K.visitors(), next)
+  return updated
+}
+
+/**
+ * Apply `patch` to an existing workspace by id. Returns the updated `Workspace`,
+ * or `undefined` if no workspace with the given id exists.
+ *
+ * Defense per D-15: `ownerVisitorId` is structurally omitted from the patch type
+ * — workspace ownership is set once at creation time by the wizard and is not a
+ * Settings-editable field (Phase 4 has no workspace transfer UX). `id` and
+ * `createdAt` are immutable for the same reasons as `updateVisitor`.
+ *
+ * Pattern mirrors `tasksRepo.updateTask` cross-module: read array via the existing
+ * `listWorkspaces` (which routes through `readWithSchema` per FND-04) → find index →
+ * spread patch → writeJSON → return updated record. Workspace has no `updatedAt`
+ * field per `WorkspaceSchema`, so there is no timestamp stamp.
+ */
+export function updateWorkspace(
+  id: string,
+  patch: Partial<Omit<Workspace, 'id' | 'ownerVisitorId' | 'createdAt'>>,
+): Workspace | undefined {
+  const existing = listWorkspaces()
+  const idx = existing.findIndex((w) => w.id === id)
+  if (idx === -1) return undefined
+  const updated: Workspace = { ...existing[idx], ...patch }
+  const next = [...existing]
+  next[idx] = updated
+  writeJSON(K.workspaces(), next)
+  return updated
+}
