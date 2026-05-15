@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 4 UI-SPEC approved
-last_updated: "2026-05-15T15:18:41.004Z"
+status: verifying
+stopped_at: Phase 4 complete (plans 04-01..05); ready for verification/transition
+last_updated: "2026-05-15T15:32:34.507Z"
 last_activity: 2026-05-15
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 27
-  completed_plans: 26
-  percent: 96
+  completed_plans: 27
+  percent: 100
 ---
 
 # Project State
@@ -27,10 +27,10 @@ See: .planning/PROJECT.md (updated 2026-05-13)
 
 Phase: 04 (core-pages-lists-settings-reports) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-05-15
 
-Progress: [██████████] 96%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -78,6 +78,7 @@ Progress: [██████████] 96%
 | Phase 04 P02 | 4min 49sec | 2 tasks | 13 files |
 | Phase 04 PP03 | 11min 26sec | 2 tasks | 8 files |
 | Phase 04 P04 | 5min 38sec | 2 tasks | 5 files |
+| Phase 04 PP05 | 7min 8sec | 2 tasks tasks | 6 files files |
 
 ## Accumulated Context
 
@@ -153,6 +154,12 @@ Recent decisions affecting current work:
 - [Phase ?]: Phase 04-04: Reset handler uses two-pass collect-then-remove over localStorage.key(i) (modifying during iteration shifts indices); sessionStorage.removeItem wrapped in try/catch (T-04-04-05 private-browsing mitigation)
 - [Phase ?]: Phase 04-04: SET-05 deferral marker comments placed in ProfileTab.tsx + WorkspaceTab.tsx onSubmit success branches — Phase 6 greps 'SET-05 deferred to Phase 6' to find both call sites in one command
 - [Phase ?]: Phase 04-04: Compile-time canary blocks (_ROLE_OPTIONS_TYPECHECK etc.) typed against form-values inferred types lock local Select option arrays to upstream Zod enums — Phase 5 enum extension that forgets to update local options fails at typecheck
+- [Phase ?]: Phase 04-05: ReportsPage composes ReportsFiltersBar + ReportsChart + ReportsTable + Export CSV button; filteredTasks useMemo runs ANDed predicate (createdAt range / assignee.id / status includes()) + presort createdAt desc so TanStack default ordering matches without re-sort
+- [Phase ?]: Phase 04-05: Made src/ui/primitives/DatePickerInput.tsx generic over Mantine DatePickerType (defaulted to 'default' for backwards compat) — Reports type='range' callers now narrow value/onChange tuple shape correctly; Lists TaskFormModal type='default' callers unaffected (Rule 3 fix)
+- [Phase ?]: Phase 04-05: ReportsChart resolves all colors via useMantineTheme() + useComputedColorScheme — indigo[6]->indigo[4] swap for in_progress in dark scheme; zero hardcoded hex in src/reports/ (verified by grep); D-18 dark-mode contract satisfied end-to-end
+- [Phase ?]: Phase 04-05: Hand-rolled RFC 4180 CSV in src/reports/csvExport.ts — quoter handles comma/newline/double-quote (doubled-escape); no library; Blob+URL.createObjectURL+ephemeral <a download>+URL.revokeObjectURL sequence; filename halo-tasks-YYYY-MM-DD.csv via dayjs(); empty assignee renders as empty string in CSV body (not em-dash)
+- [Phase ?]: Phase 04-05: ReportsTable shares TaskTable.module.css cell-padding module rather than duplicating — plan task body authorizes 'pick whichever is simpler'; both tables sit under the same UI-SPEC Spacing rule (var(--mantine-spacing-sm) var(--mantine-spacing-md))
+- [Phase ?]: Phase 04-05: Empty status filter (deselect-all-three Status options) is a deliberate empty-state trigger — filteredTasks predicate returns false when statusFilter.length===0; chart shows empty buckets, table shows compact 'No tasks match these filters' state, Export CSV disabled
 
 ### Pending Todos
 
@@ -173,6 +180,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-15T15:18:09.756Z
-Stopped at: Phase 4 UI-SPEC approved
+Last session: 2026-05-15T15:32:34.502Z
+Stopped at: Phase 4 complete (plans 04-01..05); ready for verification/transition
 Resume file: None

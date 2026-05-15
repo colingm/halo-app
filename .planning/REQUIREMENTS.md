@@ -81,10 +81,10 @@
 
 ### Reports
 
-- [ ] **REP-01**: Reports page at `/app/reports` lets the user filter task data by date range and at least one other dimension (e.g., assignee or status)
-- [ ] **REP-02**: Reports page shows a TanStack Table over the filtered task data with at least 5 columns
-- [ ] **REP-03**: Reports page shows at least one SVG chart computed from the filtered data
-- [ ] **REP-04**: Reports page has an "Export CSV" button that downloads the current filtered table as a CSV (client-side blob)
+- [x] **REP-01**: Reports page at `/app/reports` lets the user filter task data by date range and at least one other dimension (e.g., assignee or status)
+- [x] **REP-02**: Reports page shows a TanStack Table over the filtered task data with at least 5 columns
+- [x] **REP-03**: Reports page shows at least one SVG chart computed from the filtered data
+- [x] **REP-04**: Reports page has an "Export CSV" button that downloads the current filtered table as a CSV (client-side blob)
 
 ### Team / Users
 
@@ -213,10 +213,10 @@ Per-requirement mapping to phases. Every v1 requirement is mapped to exactly one
 | SET-04 | Phase 4 | Complete |
 | SET-05 | Phase 4 | Pending |
 | SET-06 | Phase 4 | Complete |
-| REP-01 | Phase 4 | Pending |
-| REP-02 | Phase 4 | Pending |
-| REP-03 | Phase 4 | Pending |
-| REP-04 | Phase 4 | Pending |
+| REP-01 | Phase 4 | Complete |
+| REP-02 | Phase 4 | Complete |
+| REP-03 | Phase 4 | Complete |
+| REP-04 | Phase 4 | Complete |
 | PEN-04 | Phase 6 | Pending |
 | PEN-05 | Phase 6 | Pending |
 | TEAM-01 | Phase 5 | Pending |

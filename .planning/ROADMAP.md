@@ -22,7 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 1: Foundation & Cross-Cutting Contracts** - Scaffold + provider stack + versioned localStorage + `PENDO_IDS` selector registry + UI primitive wrappers + masked-input primitive + public/`/app` route split (Pendo-ready markup, no Pendo runtime)
 - [x] **Phase 2: Registration & Sign-In** - Four-URL signup wizard + sign-in/sign-out + RequireAuth/RequireAnon guards (completed 2026-05-14)
 - [x] **Phase 3: Authenticated Shell & Dashboard** - AppShell (side nav + top bar + user menu) + post-sign-in Dashboard with stat cards, SVG charts, time range, and activity feed (completed 2026-05-14)
-- [ ] **Phase 4: Core Pages (Lists, Settings, Reports)** - Task CRUD, settings tabs, reports with CSV export
+- [x] **Phase 4: Core Pages (Lists, Settings, Reports)** - Task CRUD, settings tabs, reports with CSV export (completed 2026-05-15)
 - [ ] **Phase 5: Team, Help & Polish** - Team invite/role flows, searchable Help with Resource Center anchor, cross-page polish, idempotent seeding, demo-ready audit
 - [ ] **Phase 6: Pendo Install & Wiring** - Install Pendo snippet + initialize anonymously at boot + identify on registration/sign-in + clear on sign-out + sync metadata on workspace/profile changes + setUrl on route changes
 
@@ -113,7 +113,7 @@ Plans:
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 04-03-PLAN.md — Lists page: TanStack Table + filter bar + task form modal + delete confirm + two empty states (LIST-01..09)
 - [x] 04-04-PLAN.md — Settings page: URL-driven tabs + Profile/Workspace forms + theme toggle + Reset demo data (SET-01..04, SET-06)
-- [ ] 04-05-PLAN.md — Reports page: date/assignee/status filters + Recharts stacked bar + TanStack read-only table + CSV export (REP-01..04)
+- [x] 04-05-PLAN.md — Reports page: date/assignee/status filters + Recharts stacked bar + TanStack read-only table + CSV export (REP-01..04)
 **UI hint**: yes
 
 ### Phase 5: Team, Help & Polish
@@ -151,6 +151,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Foundation & Cross-Cutting Contracts | 3/6 | In Progress|  |
 | 2. Registration & Sign-In | 10/10 | Complete    | 2026-05-14 |
 | 3. Authenticated Shell & Dashboard | 6/6 | Complete   | 2026-05-14 |
-| 4. Core Pages (Lists, Settings, Reports) | 4/5 | In Progress|  |
+| 4. Core Pages (Lists, Settings, Reports) | 5/5 | Complete   | 2026-05-15 |
 | 5. Team, Help & Polish | 0/TBD | Not started | - |
 | 6. Pendo Install & Wiring | 0/TBD | Not started | - |
