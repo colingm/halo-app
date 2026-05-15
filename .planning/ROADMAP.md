@@ -133,7 +133,7 @@ Plans:
 - [x] 05-02-PLAN.md — Help static module: HelpArticleSchema, faker.seed-pinned HELP_ARTICLES, accessors (HELP-01, DATA-01)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 05-03-PLAN.md — Seed coordinator + tasksSeed amendments + assigneeOptions source swap + AppLayout call-site swap (DATA-01)
+- [x] 05-03-PLAN.md — Seed coordinator + tasksSeed amendments + assigneeOptions source swap + AppLayout call-site swap (DATA-01)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 05-04-PLAN.md — Team UI: TeamTable + InviteTeammateModal + TeamEmptyState + TeamPage composer + PENDO_IDS team namespace (TEAM-01, TEAM-02, TEAM-03, UI-01, UI-02)
