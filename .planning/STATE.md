@@ -4,14 +4,14 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 4 UI-SPEC approved
-last_updated: "2026-05-15T14:36:12.284Z"
-last_activity: 2026-05-15 -- Phase 04 planning complete
+last_updated: "2026-05-15T14:46:43.031Z"
+last_activity: 2026-05-15
 progress:
   total_phases: 6
   completed_phases: 3
   total_plans: 27
-  completed_plans: 22
-  percent: 81
+  completed_plans: 23
+  percent: 85
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-05-13)
 
 **Core value:** A convincing, multi-page SaaS surface that a Pendo customer or pre-sales engineer can install Pendo into and exercise track events & funnels, guides & in-app messaging, feature adoption analytics, and Session Replay & Listen — all without a backend.
-**Current focus:** Phase 03 — authenticated-shell-dashboard
+**Current focus:** Phase 04 — core-pages-lists-settings-reports
 
 ## Current Position
 
-Phase: 4
-Plan: Not started
+Phase: 04 (core-pages-lists-settings-reports) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-05-15 -- Phase 04 planning complete
+Last activity: 2026-05-15
 
-Progress: [██████████] 100%
+Progress: [█████████░] 85%
 
 ## Performance Metrics
 
@@ -74,6 +74,7 @@ Progress: [██████████] 100%
 | Phase 03-authenticated-shell-dashboard P03 | 2m | 2 tasks | 2 files |
 | Phase 03 P06 | 20min | 2 tasks | 2 files |
 | Phase 03-authenticated-shell-dashboard P05 | 3 | 2 tasks | 3 files |
+| Phase 04 P01 | 3min 2sec | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -130,6 +131,10 @@ Recent decisions affecting current work:
 - [Phase ?]: Phase 02-10: AUTH-11 visible Sign-out button deferred to Phase 3 per UI-SPEC; Phase 2 verifies handler end-to-end via useAuthStore.getState().signOut() console invocation (clears halo:v1:session + in-memory store + halo:v1:signup:draft). All 12 AUTH-* requirements addressed across plans 02-01..10
 - [Phase ?]: Phase 03-06: Moved all hooks before early returns (Rules of Hooks compliance); tasks useMemo guards workspaceId with ternary fallback to []
 - [Phase ?]: Phase 03-06: recharts 3.8.1 compatible with plan specs - same AreaChart/PieChart API as 2.x; no migration needed
+- [Phase ?]: Phase 04-01: defaultColorScheme="auto" + Mantine v9 inline ColorSchemeScript wires real dark-mode boot (localStorage[mantine-color-scheme-value] + prefers-color-scheme fallback); Preferences SegmentedControl in 04-04 will be a one-line useMantineColorScheme().setColorScheme() consumer
+- [Phase ?]: Phase 04-01: Pinned @mantine/dates 9.2.1 + @mantine/notifications 9.2.1 (matching @mantine/core@9.2.0 major), @tanstack/react-table 8.21.3 (D-01 single-table-primitive), dayjs 1.11.20 (peer + D-21/D-23 consumer); zero peer warnings against React 19, zero npm audit findings
+- [Phase ?]: Phase 04-01: <Notifications /> mounted as FIRST child of MantineProvider (before StorageProvider) — sibling renderer per Mantine v9 docs, NOT a Halo provider; FND-07 Storage->Auth->Workspace->PendoBridge chain preserved verbatim
+- [Phase ?]: Phase 04-01: PENDO_IDS lists/settings/reports namespaces appended verbatim from 04-UI-SPEC lines 886-972; 57 new leaves; Leaves<T> derivation picks them up automatically; existing namespaces (layout, sandbox, signup, signin, nav, topbar, dashboard, comingSoon) untouched
 
 ### Pending Todos
 
@@ -150,6 +155,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-05-15T14:04:53.583Z
+Last session: 2026-05-15T14:46:04.825Z
 Stopped at: Phase 4 UI-SPEC approved
-Resume file: .planning/phases/04-core-pages-lists-settings-reports/04-UI-SPEC.md
+Resume file: None

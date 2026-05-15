@@ -107,7 +107,7 @@ Plans:
 **Plans**: 5 plans
 Plans:
 **Wave 1**
-- [ ] 04-01-PLAN.md — Install runtime deps + dark-mode wiring + Notifications mount + PENDO_IDS registry extension (lists/settings/reports namespaces)
+- [x] 04-01-PLAN.md — Install runtime deps + dark-mode wiring + Notifications mount + PENDO_IDS registry extension (lists/settings/reports namespaces)
 - [ ] 04-02-PLAN.md — Repo extensions (tasksRepo completedAt invariant + authRepo updateVisitor/Workspace) + TaskFormSchema + badge color maps + now-ref/assigneeOptions helpers + new primitive wrappers (Checkbox/Textarea/DatePickerInput)
 
 **Wave 2** *(blocked on Wave 1 completion)*

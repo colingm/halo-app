@@ -75,7 +75,7 @@
 - [ ] **SET-01**: Settings page at `/app/settings` has tabs for Profile, Workspace, and Preferences
 - [ ] **SET-02**: Profile tab lets the user edit name, username, job title, role, location; saves persist to localStorage
 - [ ] **SET-03**: Workspace tab lets the user edit company name, size, industry, plan tier; saves persist to localStorage
-- [ ] **SET-04**: Preferences tab includes at least a theme toggle (light/dark via Mantine color scheme)
+- [x] **SET-04**: Preferences tab includes at least a theme toggle (light/dark via Mantine color scheme)
 - [ ] **SET-05**: Any save action in Settings triggers `pendo.identify` (or equivalent metadata sync) so Pendo sees updated visitor/account fields
 - [ ] **SET-06**: Settings includes a "Reset demo data" button that clears `halo:v1:*` keys (with confirmation) and reloads the app to the public landing
 
@@ -210,7 +210,7 @@ Per-requirement mapping to phases. Every v1 requirement is mapped to exactly one
 | SET-01 | Phase 4 | Pending |
 | SET-02 | Phase 4 | Pending |
 | SET-03 | Phase 4 | Pending |
-| SET-04 | Phase 4 | Pending |
+| SET-04 | Phase 4 | Complete |
 | SET-05 | Phase 4 | Pending |
 | SET-06 | Phase 4 | Pending |
 | REP-01 | Phase 4 | Pending |
