@@ -19,12 +19,12 @@ A convincing, multi-page SaaS surface that a Pendo customer or pre-sales enginee
 - [x] Multi-step registration flow capturing basic identity, personal details, company info, and onboarding preferences (becomes Pendo visitor + account metadata) — *Validated in Phase 2: registration-sign-in*
 - [x] Fake email/password sign-in backed by local storage (no real auth, no backend) — *Validated in Phase 2: registration-sign-in*
 - [x] Multi-tenant model: every visitor belongs to a workspace/company; Pendo init receives both visitor and account IDs — *Validated in Phase 2: registration-sign-in (visitor + workspace records wired; Pendo init wiring carries into Phase 3 shell)*
+- [x] Authenticated SaaS shell with persistent side navigation across all pages — *Validated in Phase 3: authenticated-shell-dashboard (Mantine AppShell, 6 NavLinks, top bar with user menu + sign-out)*
+- [x] Dashboard with charts/graphs over fabricated project/task data — *Validated in Phase 3: authenticated-shell-dashboard (Recharts SVG AreaChart + PieChart, 5 KPIs, 8-item activity timeline, empty state)*
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
-- [ ] Authenticated SaaS shell with persistent side navigation across all pages
-- [ ] Dashboard with charts/graphs over fabricated project/task data
 - [ ] Lists page where users can create, edit, reorder, and delete items (interactive surface)
 - [ ] Settings / profile page (edit identity, company info, preferences)
 - [ ] Reports / analytics page (tabular data, filters, export buttons)
@@ -97,4 +97,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-14 after Phase 2 (registration-sign-in) completion*
+*Last updated: 2026-05-15 after Phase 3 (authenticated-shell-dashboard) completion*
