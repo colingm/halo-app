@@ -35,6 +35,7 @@ import { Button } from '../ui/primitives'
 import { PENDO_IDS } from '../pendo/PENDO_IDS'
 import { useAuthStore } from '../auth'
 import { listTasks, TASK_STATUS_LABELS } from '../tasks'
+import { computeNowRef } from '../tasks/now-ref'
 import type { Task } from '../tasks'
 import { formatRelative } from './relative-time'
 
@@ -50,29 +51,9 @@ type StatusSlice = { name: string; value: number; status: 'todo' | 'in_progress'
 // Pure helper functions
 // ---------------------------------------------------------------------------
 
-/**
- * Computes the "now" reference anchor (D-21).
- * Returns max(task.createdAt, task.updatedAt, task.completedAt) across all
- * tasks; defaults to new Date() when the tasks array is empty.
- */
-function computeNowRef(tasks: Task[]): Date {
-  if (tasks.length === 0) return new Date()
-
-  let maxMs = 0
-  for (const task of tasks) {
-    const candidates = [
-      new Date(task.createdAt).getTime(),
-      new Date(task.updatedAt).getTime(),
-    ]
-    if (task.completedAt !== null) {
-      candidates.push(new Date(task.completedAt).getTime())
-    }
-    for (const ms of candidates) {
-      if (!isNaN(ms) && ms > maxMs) maxMs = ms
-    }
-  }
-  return new Date(maxMs)
-}
+// `computeNowRef` was extracted to `src/tasks/now-ref.ts` in plan 04-02 (D-22).
+// It is now shared between this Dashboard and the new Reports page; import via
+// the tasks barrel — no behavior change for the Dashboard.
 
 /**
  * Computes the start of the selected time window.

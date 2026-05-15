@@ -32,3 +32,12 @@ export type { NumberInputProps } from './NumberInput'
 
 export { NavLink } from './NavLink'
 export type { NavLinkProps } from './NavLink'
+
+export { Checkbox } from './Checkbox'
+export type { CheckboxProps } from './Checkbox'
+
+export { Textarea } from './Textarea'
+export type { TextareaProps } from './Textarea'
+
+export { DatePickerInput } from './DatePickerInput'
+export type { DatePickerInputProps } from './DatePickerInput'
