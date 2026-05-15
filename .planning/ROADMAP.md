@@ -126,7 +126,23 @@ Plans:
   3. On first sign-in for a brand-new workspace, faker-seeded tasks, team members, activity, and help articles populate the app; subsequent reloads do not clobber user mutations (idempotency gated by `meta.seededAt`)
   4. Every page that can be empty shows a polished empty state with a primary CTA (good guide anchors), every meaningful action (create/save/delete/invite) shows a toast, and every destructive action (delete task, reset demo data, remove member) shows a confirmation modal
   5. A manual "could this pass for a real B2B SaaS in a screenshot?" audit passes — consistent spacing/typography/color across all pages — and the Pendo-readiness checklist (routes deep-link, Replay-mask class on password inputs, no canvas charts, every interactive element has a `data-pendo-id` from the registry) is walked end-to-end and signed off
-**Plans**: TBD
+**Plans**: 6 plans
+Plans:
+**Wave 1**
+- [ ] 05-01-PLAN.md — Team data layer: schemas, types, teamsRepo, teamSeed, K.teammates (TEAM-01, DATA-01)
+- [ ] 05-02-PLAN.md — Help static module: HelpArticleSchema, faker.seed-pinned HELP_ARTICLES, accessors (HELP-01, DATA-01)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 05-03-PLAN.md — Seed coordinator + tasksSeed amendments + assigneeOptions source swap + AppLayout call-site swap (DATA-01)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 05-04-PLAN.md — Team UI: TeamTable + InviteTeammateModal + TeamEmptyState + TeamPage composer + PENDO_IDS team namespace (TEAM-01, TEAM-02, TEAM-03, UI-01, UI-02)
+
+**Wave 4** *(blocked on Wave 3 completion — serialized on src/pendo/PENDO_IDS.ts after Plan 04 appends `team`)*
+- [ ] 05-05-PLAN.md — Help UI: HelpSearchInput + HelpList + HelpNoResultsState + HelpPage composer + HelpArticlePage + nested router child + PENDO_IDS help namespace (HELP-01, HELP-02, HELP-03, HELP-04, UI-01)
+
+**Wave 5** *(blocked on Waves 1–4 completion)*
+- [ ] 05-06-PLAN.md — Cross-page polish + Pendo-readiness audit + manual "Looks Done But Isn't" checkpoint (UI-01, UI-02, UI-03, UI-04)
 **UI hint**: yes
 
 ### Phase 6: Pendo Install & Wiring
