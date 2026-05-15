@@ -28,6 +28,19 @@ import type { Task } from './types'
 /** Input to `createTask`. The repo fills `id`, `createdAt`, and `updatedAt`. */
 export type CreateTaskInput = Omit<Task, 'id' | 'createdAt' | 'updatedAt'>
 
+/**
+ * Input to `updateTask`. The repo owns `completedAt` and `prevStatus` (D-09
+ * + symmetric prevStatus invariant — see `updateTask` JSDoc), so neither is
+ * surfaced to callers. Type-locking this here means a caller cannot
+ * accidentally smuggle `prevStatus: 'done'` (or any other prevStatus value)
+ * through the merge and corrupt the off-done restore behavior in
+ * `ListsPage`'s checkbox toggle. The same defense-in-depth gap exists for
+ * `id` and `createdAt`; this is the right place to draw the line.
+ */
+export type UpdateTaskPatch = Partial<
+  Omit<Task, 'id' | 'createdAt' | 'completedAt' | 'prevStatus'>
+>
+
 // ---------------------------------------------------------------------------
 // Read helpers
 // ---------------------------------------------------------------------------
@@ -92,14 +105,16 @@ export function createTask(workspaceId: string, input: CreateTaskInput): Task {
 export function updateTask(
   workspaceId: string,
   id: string,
-  patch: Partial<Omit<Task, 'id' | 'createdAt'>>,
+  patch: UpdateTaskPatch,
 ): Task | undefined {
   const existing = listTasks(workspaceId)
   const idx = existing.findIndex((t) => t.id === id)
   if (idx === -1) return undefined
 
   // D-09: clone the patch locally before stamping completedAt + prevStatus so
-  // we never mutate the caller's object.
+  // we never mutate the caller's object. Local `stamped` widens beyond
+  // `UpdateTaskPatch` because the repo itself writes the repo-owned fields
+  // (`completedAt`, `prevStatus`) that callers cannot.
   const stamped: Partial<Omit<Task, 'id' | 'createdAt'>> = { ...patch }
   const prevTaskStatus = existing[idx].status
   if (stamped.status !== undefined) {
