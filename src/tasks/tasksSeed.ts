@@ -1,24 +1,29 @@
 /**
- * Halo tasks seeder (Phase 5 D-12 amendment — pure data writer).
+ * Halo tasks seeder (Phase 5 D-12 amendment — pure data writer; updated Plan 07).
  *
- * Per Phase 5 D-12, the meta.seededAt stamp moves to src/seed/seedAll.ts
- * which is the single owner of that flag after both seeders complete.
- * tasksSeed is now a pure data writer (writeJSON to K.tasks only).
+ * Per Phase 5 D-12, the meta stamp moves to src/seed/seedAll.ts which is the
+ * single owner of meta writes after both seeders complete. tasksSeed is a pure
+ * data writer (writeJSON to K.tasks only).
  *
  * Generates ~40-60 faker tasks for the supplied workspace, picking assignees
- * from the just-seeded teammate list (D-04). Gated on the `meta.seededAt`
- * flag (read-only check — the coordinator writes it) and a defensive
- * tasks-existence check so subsequent reloads never clobber user mutations.
+ * from the just-seeded teammate list (D-04). Gated on the per-domain ledger
+ * plus a legacy-compat fallback, plus a defensive tasks-existence check.
  *
- * Idempotency contract (D-04 + D-12):
+ * Idempotency contract (D-04 + D-12 + Plan 07):
  *   1. Read meta via readWithSchema(K.meta(), MetaSchema, DEFAULT_META)
- *   2. If meta.seededAt !== null: skip seeding entirely (primary gate).
- *   3. Else if listTasks(workspaceId).length > 0: skip (defensive guard;
- *      should not happen if seededAt is correctly null — protects against
- *      DevTools / external writes that stamped tasks without updating meta).
- *   4. Else: read teammates, map to Assignee candidates, generate tasks,
+ *   2. If meta.seededDomains.tasks is set: skip (per-domain ledger — Plan 07).
+ *   3. Legacy compat: if meta.seededDomains is absent AND meta.seededAt is set,
+ *      treat as tasks-already-seeded (pre-Phase-5 installs stamped seededAt at
+ *      the Phase 3 tasksSeed tail — Plan 07 preserves existing task data via
+ *      this fallback).
+ *   4. Else if listTasks(workspaceId).length > 0: skip (defensive guard;
+ *      protects against DevTools / external writes that wrote tasks without
+ *      updating meta).
+ *   5. Else: read teammates, map to Assignee candidates, generate tasks,
  *      writeJSON(K.tasks(workspaceId), tasks). DO NOT stamp meta.seededAt
- *      here — that stamp belongs to the seedAll.ts coordinator (D-12).
+ *      here — DO NOT stamp meta.seededAt here — that stamp belongs to the
+ *      seedAll.ts coordinator (D-12 + Plan 07; the coordinator now owns
+ *      per-domain seededDomains writes).
  *
  * Caller: src/seed/seedAll.ts — invoked as seedTasksIfNeeded() after
  * seedTeammatesIfNeeded(). AppLayout now calls seedDemoData() (the
@@ -38,6 +43,7 @@
 import { faker } from '@faker-js/faker'
 import { nanoid } from 'nanoid'
 import { K, readWithSchema, writeJSON, MetaSchema, APP_VERSION, SCHEMA_VERSION } from '../storage'
+import type { Meta } from '../storage'
 import { TasksArraySchema } from './schemas'
 import { TeammatesArraySchema } from '../team/schemas'
 import type { Task, TaskStatus, TaskPriority, Assignee } from './types'
@@ -46,9 +52,9 @@ import type { Task, TaskStatus, TaskPriority, Assignee } from './types'
 // Default meta constant (mirrors migrations.ts DEFAULT_META shape)
 // ---------------------------------------------------------------------------
 
-const DEFAULT_META = {
+const DEFAULT_META: Meta = {
   schemaVersion: SCHEMA_VERSION,
-  seededAt: null as string | null,
+  seededAt: null,
   appVersion: APP_VERSION,
 }
 
@@ -170,8 +176,15 @@ export function seedIfNeeded(workspaceId: string): void {
   // Read current meta (falls through to DEFAULT_META if corrupt or absent).
   const meta = readWithSchema(K.meta(), MetaSchema, DEFAULT_META)
 
-  // GATE 1: Primary idempotency check — meta.seededAt is the authoritative flag.
-  if (meta.seededAt !== null) return
+  // GATE 1a: Per-domain ledger check (Plan 07) — coordinator sets this entry
+  // after a successful seed run; fastest path for already-seeded installs.
+  if (meta.seededDomains?.tasks) return
+
+  // GATE 1b: Legacy-compat fallback — pre-Phase-5 installs (Phase 3 tasksSeed
+  // tail at commit 3b9bdc6) stamped meta.seededAt before per-domain ledgering
+  // existed. Treat non-null seededAt with absent seededDomains as evidence the
+  // task domain was already seeded — preserves existing task data (Plan 07).
+  if (meta.seededAt !== null && meta.seededDomains === undefined) return
 
   // GATE 2: Defensive check — if tasks exist without seededAt, skip seeding
   // instead of overwriting. This protects against DevTools edits / external

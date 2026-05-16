@@ -1,19 +1,20 @@
 /**
- * Halo team seeder (Phase 5 D-04, D-11, D-12).
+ * Halo team seeder (Phase 5 D-04, D-11, D-12 — updated by Plan 07).
  *
  * Generates 8–12 faker teammates for the supplied workspace, gated on the
- * `meta.seededAt` flag. Called by the seedAll.ts coordinator — NOT directly
- * from AppLayout.
+ * per-domain ledger entry `meta.seededDomains.teammates`. Called by the
+ * seedAll.ts coordinator — NOT directly from AppLayout.
  *
  * Idempotency contract (mirrors tasksSeed.ts two-gate pattern):
  *   1. Read meta via readWithSchema(K.meta(), MetaSchema, DEFAULT_META)
- *   2. If meta.seededAt !== null: skip (primary gate, set by seedAll coordinator).
+ *   2. If meta.seededDomains.teammates is set: skip (per-domain ledger written
+ *      by seedAll coordinator — Plan 07).
  *   3. Else if listTeammates(workspaceId).length > 0: skip (defensive guard).
  *   4. Else: synthesize Owner row from currentVisitor (D-04), generate 8–12
  *      faker teammates, write combined array (Owner first per D-04).
  *
- * This seeder DOES NOT stamp meta.seededAt — the seedAll coordinator (Plan 03)
- * stamps after both seeders succeed per Phase 5 D-12.
+ * This seeder DOES NOT write meta — the seedAll coordinator (Plan 03 + Plan 07)
+ * owns all meta writes including the per-domain seededDomains.teammates timestamp.
  *
  * Randomness:
  *   faker.seed(N) is intentionally NOT called — each workspace gets a unique
@@ -29,6 +30,7 @@
 import { faker } from '@faker-js/faker'
 import { nanoid } from 'nanoid'
 import { K, readWithSchema, writeJSON, MetaSchema, APP_VERSION, SCHEMA_VERSION } from '../storage'
+import type { Meta } from '../storage'
 import { TeammatesArraySchema } from './schemas'
 import { useAuthStore } from '../auth/authStore'
 import type { Teammate } from './types'
@@ -37,9 +39,9 @@ import type { Teammate } from './types'
 // Default meta constant (mirrors tasksSeed.ts shape)
 // ---------------------------------------------------------------------------
 
-const DEFAULT_META = {
+const DEFAULT_META: Meta = {
   schemaVersion: SCHEMA_VERSION,
-  seededAt: null as string | null,
+  seededAt: null,
   appVersion: APP_VERSION,
 }
 
@@ -98,10 +100,12 @@ function generateTeammates(count: number): Teammate[] {
  *   string (nanoid format).
  */
 export function seedTeammatesIfNeeded(workspaceId: string): void {
-  // GATE 1: Primary idempotency check — meta.seededAt is the authoritative flag.
-  // This is a read-only check; stamping happens in seedAll.ts (D-12).
+  // GATE 1: Per-domain idempotency check — coordinator owns the ledger write
+  // (Plan 07). Do NOT check legacy meta.seededAt here; the coordinator's
+  // legacy reconciliation owns that interpretation and only calls this function
+  // when teammates have not been seeded.
   const meta = readWithSchema(K.meta(), MetaSchema, DEFAULT_META)
-  if (meta.seededAt !== null) return
+  if (meta.seededDomains?.teammates) return
 
   // GATE 2: Defensive check — protects against external writes that wrote
   // teammates but didn't stamp meta.seededAt (mirrors tasksSeed GATE 2).
@@ -131,7 +135,8 @@ export function seedTeammatesIfNeeded(workspaceId: string): void {
   // Owner row MUST be at index 0 (D-04 — appears at top of table).
   const teammates = ownerRow ? [ownerRow, ...fakerTeammates] : fakerTeammates
 
-  // CRITICAL D-12: Write teammates, DO NOT stamp meta.seededAt here.
-  // The seedAll.ts coordinator stamps after BOTH seeders succeed.
+  // CRITICAL D-12 + Plan 07: Write teammates, DO NOT write meta here.
+  // The seedAll.ts coordinator owns all meta writes including the per-domain
+  // seededDomains.teammates timestamp (Plan 07).
   writeJSON(K.teammates(workspaceId), teammates)
 }
