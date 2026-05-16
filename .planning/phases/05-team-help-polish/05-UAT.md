@@ -1,9 +1,9 @@
 ---
-status: diagnosed
+status: resolved
 phase: 05-team-help-polish
 source: [05-01-SUMMARY.md, 05-02-SUMMARY.md, 05-03-SUMMARY.md, 05-04-SUMMARY.md, 05-05-SUMMARY.md, 05-06-SUMMARY.md]
 started: 2026-05-15T23:49:33Z
-updated: 2026-05-16T00:15:00Z
+updated: 2026-05-16T01:52:20Z
 ---
 
 ## Current Test
@@ -75,7 +75,7 @@ blocked: 0
 ## Gaps
 
 - truth: "Team page shows Owner row plus 8–12 faker teammates on first paint after a fresh sign-in (seedAll coordinator ran cleanly)"
-  status: failed
+  status: resolved
   reason: "User reported: There was no seeded data on the Team page"
   severity: major
   test: 1
@@ -94,7 +94,7 @@ blocked: 0
   shared_root_cause_with: "Gap 4 (test 7) — same fix resolves both"
 
 - truth: "Invite teammate modal opens with blank defaults on every reopen (form state resets between opens)"
-  status: failed
+  status: resolved
   reason: "User reported: The \"Invite teammate\" popup kept the values from the previous invite if clicked multiple times without a full refresh"
   severity: major
   test: 1
@@ -111,7 +111,7 @@ blocked: 0
   debug_session: ".planning/debug/05-invite-modal-state-leak.md"
 
 - truth: "Invite teammate modal renders valid HTML with no heading-nesting hydration errors in the console"
-  status: failed
+  status: resolved
   reason: "User reported: Error appeared in console: \"In HTML, <h3> cannot be a child of <h2>. This will cause a hydration error.\""
   severity: major
   test: 4
@@ -128,7 +128,7 @@ blocked: 0
   debug_session: ".planning/debug/05-invite-modal-h3-in-h2.md"
 
 - truth: "Team page renders an Owner row representing the signed-in visitor at the top of the table"
-  status: failed
+  status: resolved
   reason: "User reported: There is no Owner row on the Team page"
   severity: major
   test: 7
