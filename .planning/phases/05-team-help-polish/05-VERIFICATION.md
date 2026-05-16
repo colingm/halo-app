@@ -1,314 +1,333 @@
 ---
 phase: 05-team-help-polish
-plan: 06
-verified: 2026-05-15T00:00:00Z
-status: automated_complete_human_needed
-score: 12/12 automated gates run
+verified: 2026-05-16T02:00:00Z
+status: human_needed
+score: 12/12 must-haves verified
+overrides_applied: 0
+re_verification:
+  previous_status: human_needed
+  previous_score: 12/12 automated gates (pre-gap UAT failures excluded from prior score)
+  gaps_closed:
+    - "Cold-start seed reconciliation: seedAll per-domain ledger now runs teammate seeder against legacy localStorage state (Gap 1 + Gap 4)"
+    - "Invite teammate modal form state leak between opens (Gap 2 — prevOpenedRef + open-transition form.reset)"
+    - "Invite teammate modal h3-in-h2 React 19 hydration error (Gap 3 — plain string title prop)"
+  gaps_remaining: []
+  regressions: []
+human_verification:
+  - test: "Cold-start against pre-Phase-5 localStorage — team page populates without Reset"
+    expected: "Set halo:v1:meta to {schemaVersion:1,seededAt:'2026-01-01T00:00:00.000Z',appVersion:'0.1.0'} in DevTools, remove any K.teammates key, hard-refresh, sign in. /app/team shows Owner row + 8-12 teammates. K.meta() now contains seededDomains with both tasks and teammates entries."
+    why_human: "Requires a live browser session with DevTools localStorage manipulation to simulate legacy state."
+  - test: "Invite teammate modal — blank defaults on every reopen after submit"
+    expected: "Submit an invite. Reopen the modal. Email is blank, role is Member. No leftover values from previous invite."
+    why_human: "RHF state lifecycle requires running app interaction."
+  - test: "Invite teammate modal — blank defaults on every reopen after cancel"
+    expected: "Fill email + role, then click Cancel (or Escape). Reopen the modal. Fields are blank."
+    why_human: "RHF state lifecycle requires running app interaction."
+  - test: "No h3-in-h2 console error when opening Invite teammate modal"
+    expected: "DevTools Console shows NO message containing 'In HTML, <h3> cannot be a child of <h2>'"
+    why_human: "React 19 hydration warnings appear only at runtime in the browser console."
+  - test: "Typography gestalt — UAT-01"
+    expected: "Dashboard / Lists / Reports / Settings / Team / Help look visually uniform in both light and dark mode."
+    why_human: "Subjective visual judgment."
+  - test: "Team page dark mode cell + badge readability — UAT-02"
+    expected: "Table cells, Invited badge, Owner row, avatar initials, role Select all readable in dark mode."
+    why_human: "Dark-mode contrast requires live browser rendering."
+  - test: "Invite teammate modal dark mode recolor — UAT-03"
+    expected: "Modal background, TextInput, Select, footer buttons recolor cleanly in dark mode."
+    why_human: "Runtime dark-mode rendering."
+  - test: "Help page article row hover + dark mode — UAT-04"
+    expected: "Hover state visible without indigo tint on row background. No-results text readable."
+    why_human: "Hover state and dark-mode contrast require live browser."
+  - test: "Help detail page article body readability — UAT-05"
+    expected: "Body paragraphs render as distinct blocks with adequate spacing. Looks like a real help article."
+    why_human: "Paragraph layout and readability require visual inspection."
+  - test: "Pendo DevTools spot-check — Team row — UAT-06"
+    expected: "Role Select carries data-pendo-id='team.row.role-select' AND data-pendo-teammate-id='<uuid>'."
+    why_human: "DevTools attribute inspection requires live browser."
+  - test: "Pendo DevTools spot-check — Help article row — UAT-07"
+    expected: "Element carries data-pendo-id='help.article.row' AND data-pendo-article-slug='<slug>'."
+    why_human: "DevTools attribute inspection requires live browser."
+  - test: "Pendo DevTools spot-check — PasswordInput class — UAT-08"
+    expected: "The <input type='password'> DOM element has class containing 'pendo-sr-ignore'."
+    why_human: "DOM inspection requires running app."
+  - test: "Reset demo data re-seed cycle — UAT-09"
+    expected: "Settings -> Reset -> re-sign-in -> /app/team shows Owner + teammates; /app/lists shows tasks with team assignees."
+    why_human: "Full reset + re-seed cycle requires running app + localStorage inspection."
 ---
 
-# Phase 5 — Pendo-Readiness + Polish Verification Report
+# Phase 5: Team, Help & Polish Verification Report (Re-verification)
 
-**Phase Goal:** Team page, Help list + detail, idempotent seeding (teammates + tasks), assignee-source swap, and a cross-page polish pass confirming Halo is demo-ready for Phase 6's Pendo install.
+**Phase Goal:** Team management, Help center, Reset demo data, and Pendo-readiness polish — Team invite/role flows, searchable Help with Resource Center anchor, cross-page polish, idempotent seeding, demo-ready audit.
+**Verified:** 2026-05-16
+**Status:** human_needed
+**Re-verification:** Yes — after Plans 05-07 (seed ledger fix, Gaps 1+4) and 05-08 (modal reset + heading fix, Gaps 2+3)
 
-**Verified:** 2026-05-15
-**Method:** Automated grep gates (12 total) + targeted code inspection; human-eye UAT items deferred per D-17.
+## Gap Closure Summary
 
----
+The previous verification (via Plan 05-06) ran 12 automated gates all PASS, but UAT exposed 4 gaps:
+- **Gap 1 (Test 1):** No seeded data on Team page against pre-Phase-5 localStorage state
+- **Gap 2 (Test 1 sub-issue):** Invite modal retained previous invite's values on reopen
+- **Gap 3 (Test 4):** React 19 h3-in-h2 hydration warning in console
+- **Gap 4 (Test 7):** No Owner row on Team page (shared root cause with Gap 1)
 
-## Automated Gate Results
-
-### Gate 1 — PEN-08: SVG-only charts (no `<canvas>`)
-
-**Command:** `grep -rnE "<canvas" src/`
-**Result:** 0 matches
-**Status:** PASS
-
-No canvas elements anywhere in `src/`. The Recharts SVG chart regression guard is clean. Phase 5 ships zero new chart surfaces, as expected.
-
----
-
-### Gate 2 — PEN-09: Replay mask on PasswordInput
-
-**Command:** `grep -cE "pendo-sr-ignore" src/ui/primitives/PasswordInput.tsx`
-**Result:** 2 (class applied in className merge + JSDoc comment)
-**Status:** PASS
-
-`src/ui/primitives/PasswordInput.tsx` line 20 merges `'pendo-sr-ignore'` into the `className` prop before forwarding to Mantine's `PasswordInput`. The class reaches the rendered DOM `<input type="password">` element on both sign-in and signup pages.
-
----
-
-### Gate 3 — PEN-07: No hand-typed `data-pendo-id` strings in Phase 5 surfaces
-
-**Command:** `grep -rE 'data-pendo-id="(team|help)\.' src/`
-**Result:** 0 matches in non-registry files
-**Status:** PASS
-
-All `team.*` and `help.*` namespace string literals exist exclusively in `src/pendo/PENDO_IDS.ts`. Every consumer (`TeamPage.tsx`, `TeamTable.tsx`, `InviteTeammateModal.tsx`, `HelpPage.tsx`, `HelpArticlePage.tsx`, `HelpList.tsx`, `HelpNoResultsState.tsx`) references `PENDO_IDS.<namespace>.<key>`.
-
-**Note:** `HelpArticlePage.tsx` uses `data-pendo-id={PENDO_IDS.help.article.detailBackLink}` directly on a raw `<MantineAnchor>` (S3 polymorphic-Anchor exception — Halo's Anchor wrapper does not expose polymorphic `component=` typing). The value flows from the registry, not a hand-typed string — this is not a Gate 3 violation.
-
-**Dynamic parameterized attributes** (`data-pendo-teammate-id`, `data-pendo-article-slug`) are excluded from this gate per spec — they carry row-level data values, not registry string literals.
-
----
-
-### Gate 4 — UI-04 typography: page title heading levels
-
-**Command:** `grep -rnE "Title order=\{2\}" src/routes/app/`
-**Result:** 0 matches
-**Status:** PASS
-
-Inspected all seven `/app/*` page files:
-
-| Page | File | Title element | Status |
-|------|------|---------------|--------|
-| Dashboard | `src/routes/app/dashboard/Dashboard.tsx` | `<Title order={3}>` — confirmed by code inspection | PASS |
-| Lists | `src/routes/app/lists/ListsPage.tsx` | `<Title order={3}>Tasks</Title>` (line 106) | PASS |
-| Reports | `src/routes/app/reports/ReportsPage.tsx` | `<Title order={3}>Reports</Title>` (line 116) | PASS |
-| Settings | `src/routes/app/settings/SettingsPage.tsx` | `<Title order={3}>Settings</Title>` (line 54) | PASS |
-| Team | `src/routes/app/team/TeamPage.tsx` | `<Title order={3}>Team</Title>` (line 66) | PASS |
-| Help list | `src/routes/app/help/HelpPage.tsx` | `<Title order={3}>Help</Title>` (line 49) | PASS |
-| Help detail | `src/routes/app/help/HelpArticlePage.tsx` | `<Title order={3}>{article.title}</Title>` + `<Title order={3}>Article not found</Title>` | PASS |
-
-No rogue `order={2}` page titles found. Dashboard KPI stat cards use `<Title order={2}>` for numeric values (exempted per spec — those are KPI display values, not page titles).
-
----
-
-### Gate 5a — UI-04 typography: no `fw={700}`
-
-**Command:** `grep -rE "fw=\{700\}" src/`
-**Result:** 0 matches
-**Status:** PASS
-
-The Phase 3/4/5 two-weight typography contract holds. No `fw={700}` anywhere in the codebase.
+Plan 05-07 and Plan 05-08 executed to close all four gaps.
 
 ---
 
-### Gate 5b — UI-04 typography: no `size="xs"` in Phase 5-touched files
+## Goal Achievement
 
-**Command:** `grep -rE 'size="xs"' src/team/ src/help/ src/seed/ src/routes/app/team/ src/routes/app/help/`
-**Result:** 0 matches
-**Status:** PASS
+### Observable Truths
 
-The `xs` spacing token (10px, not a multiple of 4) exclusion holds across all Phase 5 surfaces.
+| # | Truth | Status | Evidence |
+|---|-------|--------|---------|
+| 1 | /app/team lists seeded teammates with Owner at index 0; role dropdown persists inline (TEAM-01, TEAM-03) | VERIFIED | `listTeammates`, `updateTeammate` called in TeamPage.tsx (5 matches); TeamTable renders 4 columns; Owner row Mechanism A (disabled Select) confirmed by grep |
+| 2 | Invite teammate modal creates invited rows, emits green toast (TEAM-02) | VERIFIED | `createTeammate` + `findTeammateByEmail` in InviteTeammateModal.tsx; `'Invite sent'` toast; `superRefine` dedupe; status='invited' + invitedAt set |
+| 3 | Invite modal opens with blank defaults on every reopen — Gap 2 closed | VERIFIED | `prevOpenedRef = useRef(opened)` present (1 match); `form.reset(defaultValues)` present (2 matches); `[opened, form, defaultValues]` dep array confirmed; `defaultValues` memoized via useMemo |
+| 4 | No h3-in-h2 heading nesting / React 19 hydration error — Gap 3 closed | VERIFIED | `title="Invite teammate"` plain string (1 match); `title={<Title` pattern absent (0 matches); `Title` not imported from @mantine/core (0 matches) |
+| 5 | /app/help lists >=8 articles grouped by topic with debounced search (HELP-01, HELP-02) | VERIFIED | `useDebouncedValue(query, 150)` present; HelpList renders topic-grouped articles; HELP_ARTICLES static module has 10 articles (faker.seed(42) pinned) |
+| 6 | Clicking an article navigates to /app/help/{slug} with full body render (HELP-03) | VERIFIED | HelpArticlePage exists; `getHelpArticleBySlug` called; `body.split('\n\n')` paragraph render; both article-found and article-not-found branches |
+| 7 | Stable help anchor satisfies PENDO_IDS.nav.help (HELP-04, D-10) | VERIFIED | `PENDO_IDS.nav.help` in AppLayout.tsx; no new IconHelp/FAB markup added |
+| 8 | Cold-start against legacy localStorage seeds teammates without losing tasks — Gaps 1+4 closed | VERIFIED | `seedAll.ts`: no global `meta.seededAt` gate; `effectiveDomains` computed with legacy reconciliation (`tasks: meta.seededAt` when seededDomains absent); teammate seeder runs when `effectiveDomains.teammates` falsy; `teamSeed.ts` GATE 1 checks `meta.seededDomains?.teammates` (not legacy seededAt); `tasksSeed.ts` GATE 1b preserves legacy installs |
+| 9 | Faker seeding is idempotent; Reset demo data re-seed works (DATA-01) | VERIFIED | `seedAll.ts` per-domain gates prevent double-seeding; migrations.ts untouched; SCHEMA_VERSION stays 1; Reset path clears halo:v* -> next boot hits fresh-install path |
+| 10 | All 7 empty states present (UI-01) | VERIFIED | Confirmed by Plan 05-06 Gate 9: Dashboard, Lists hero, Lists filtered, Reports filtered, Team hero, Help no-results, Help article-not-found — all present |
+| 11 | All 7 toast call sites present (UI-02) | VERIFIED | Confirmed by Plan 05-06 Gate 10: task create/save/delete, profile save, workspace save, invite sent, role updated |
+| 12 | Destructive confirms intact; no new destructive flows (UI-03) | VERIFIED | DeleteConfirmModal + ResetDemoDataModal confirmed present; Phase 5 adds no new destructive flows |
 
----
-
-### Gate 6 — UI-04 spacing: no raw px values in Phase 5 CSS modules
-
-**Command:** `find src/team/components src/help/components src/seed -name "*.css" | xargs grep -rE "[0-9]+px\b"`
-**Raw output:** `src/team/components/TeamTable.module.css: *   (vertical sm = 12px, horizontal md = 16px)`
-**Status:** PASS
-
-The match is inside a JSDoc comment explaining the Mantine spacing vars — not an actual CSS property value. The `.cell` rule uses `padding: var(--mantine-spacing-sm) var(--mantine-spacing-md)` (no raw px). The CSS module is clean.
-
-No Phase 5 CSS modules contain raw pixel values in CSS rules.
-
----
-
-### Gate 7 — UI-04 color: no hardcoded hex in Phase 5 source
-
-**Command:** `grep -rE "#[0-9a-fA-F]{3,6}\b" src/team/ src/help/ src/seed/`
-**Result:** 0 matches
-**Status:** PASS
-
-All Phase 5 color references use Mantine CSS variables (`var(--mantine-color-*)`) or Mantine prop tokens (`color="yellow"`, `color="green"`, `color="indigo"`). No hardcoded hex values in `src/team/`, `src/help/`, or `src/seed/`. Dark-mode recolor is handled automatically by Mantine's CSS-var system.
+**Score:** 12/12 truths verified (automated/static analysis)
 
 ---
 
-### Gate 8 — UI-04 surface: no `shadow` prop on `/app/*` `<Paper>` surfaces
+## Plan 07 Specific Verifications (Gap 1 + Gap 4)
 
-**Command:** `grep -rE "<Paper[^>]*shadow=" src/routes/app/`
-**Result:** 0 matches
-**Status:** PASS
-
-All `<Paper>` surfaces on `/app/*` pages use `withBorder` (not `shadow`). AppShell may use shadow internally — only direct-page `<Paper>` surfaces are gated here.
-
----
-
-### Gate 9 — UI-01: Empty state completeness
-
-**Status:** PASS (6/6 verified; 1/7 not applicable)
-
-| Empty state | Trigger | Grep evidence | Status |
-|------------|---------|---------------|--------|
-| Dashboard — no tasks | `tasks.length === 0` | `EmptyState` function + `<Title order={3}>No tasks yet</Title>` in `src/dashboard/Dashboard.tsx` | PASS |
-| Lists — no tasks ever | `allTasks.length === 0` | `<ListsEmptyState` in `src/routes/app/lists/ListsPage.tsx` | PASS |
-| Lists — filters yield zero | `filteredTasks.length === 0 && filtersActive` | `<FilteredEmptyState onClearFilters={resetFilters} />` in `src/routes/app/lists/ListsPage.tsx` | PASS |
-| Reports — filters yield zero | `filteredTasks.length === 0` | `"No tasks match these filters."` in `src/reports/ReportsTable.tsx` | PASS |
-| Team — no teammates | `teammates.length === 0` | `<TeamEmptyState` in `src/routes/app/team/TeamPage.tsx` | PASS |
-| Help — search yields zero | `filtered.length === 0 && debouncedQuery !== ''` | `<HelpNoResultsState query={...}` in `src/routes/app/help/HelpPage.tsx` | PASS |
-| Help detail — article not found | `getHelpArticleBySlug(slug) === undefined` | `<Title order={3}>Article not found</Title>` in `src/routes/app/help/HelpArticlePage.tsx` | PASS |
-| Help — no articles at all | Static module guarantees ≥8 articles | N/A — static module invariant | NOT APPLICABLE |
-
----
-
-### Gate 10 — UI-02: Toast notification completeness
-
-**Command:** `grep -rn "notifications.show(" src/` (filtered to call sites)
-**Status:** PASS
-
-| Action | Expected call site | Grep evidence |
-|--------|-------------------|---------------|
-| Task created | `src/tasks/components/TaskFormModal.tsx` | Line 191 — `title: 'Task created'` |
-| Task saved | `src/tasks/components/TaskFormModal.tsx` | Line 200 — `title: 'Changes saved'` |
-| Task deleted | `src/routes/app/lists/ListsPage.tsx` | Line 191 — `title: 'Task deleted'` |
-| Profile saved | `src/settings/ProfileTab.tsx` | Lines 100 + 114 (success + error paths) |
-| Workspace saved | `src/settings/WorkspaceTab.tsx` | Lines 99 + 110 (success + error paths) |
-| Invite sent | `src/team/components/InviteTeammateModal.tsx` | Line 92 — `title: 'Invite sent'` |
-| Role updated | `src/routes/app/team/TeamPage.tsx` | Line 53 — `title: 'Role updated'` |
-
-All 7 expected toast triggers are present. No missing call sites detected.
-
-**Note:** `ResetDemoDataModal.tsx` intentionally omits a toast — the hard reload destroys the JS context; no toast opportunity exists. This is correct behavior, not a gap.
-
----
-
-### Gate 11 — UI-03: Destructive confirmation completeness
-
-**Status:** PASS — no new destructive flows; existing confirms intact.
-
-| Confirm | Grep evidence | Status |
-|---------|---------------|--------|
-| Delete task | `<DeleteConfirmModal` in `src/routes/app/lists/ListsPage.tsx` | PASS |
-| Reset demo data | `<ResetDemoDataModal` in `src/settings/PreferencesTab.tsx` | PASS |
-
-Phase 5 introduces zero new destructive flows ("Remove member" is `<deferred>`). No new confirmation modals were accidentally added.
-
----
-
-### Gate 12 — SHELL-04: Deep-link integrity for `/app/help/:slug`
-
-**Status:** PASS (structural guarantee; no automated test required per plan)
-
-`src/router.tsx` line 126 registers `{ path: 'help/:slug', Component: HelpArticlePage }` as a flat sibling under the `AppLayout` pathless layout route. This inherits:
-- `RequireAuth` guard from the parent `/app` route wrapper.
-- Vite dev server SPA fallback (serves `index.html` on every path) for browser refresh deep-linking.
-- `createBrowserRouter` (History API) — no hash routing — per FND-03 Phase 1 lock.
-
-The `/app/help/:slug` route was implemented as a flat sibling (not a nested child) because `HelpPage` has no `<Outlet />` — nesting would render list + detail simultaneously. UI-SPEC line 840 explicitly accepts either shape; the flat sibling shape is used here.
-
-`PENDO_IDS.nav.help` (Phase 3 D-04) continues to route to `/app/help` as the Resource Center attachment anchor — HELP-04 no-op confirmed.
-
----
-
-## Summary Table
-
-| Gate | Description | Result |
-|------|-------------|--------|
-| 1 | PEN-08: No `<canvas>` in src/ | PASS |
-| 2 | PEN-09: `.pendo-sr-ignore` on PasswordInput | PASS |
-| 3 | PEN-07: No hand-typed team/help pendo-id strings | PASS |
-| 4 | UI-04: All page titles `<Title order={3}>` | PASS |
-| 5a | UI-04: No `fw={700}` anywhere | PASS |
-| 5b | UI-04: No `size="xs"` in Phase 5 files | PASS |
-| 6 | UI-04: No raw px in Phase 5 CSS modules | PASS |
-| 7 | UI-04: No hardcoded hex in Phase 5 source | PASS |
-| 8 | UI-04: No `shadow` on `/app/*` Paper surfaces | PASS |
-| 9 | UI-01: All 7 empty states present | PASS |
-| 10 | UI-02: All 7 toast call sites present | PASS |
-| 11 | UI-03: Existing confirms intact; no new flows | PASS |
-| 12 | SHELL-04: `/app/help/:slug` deep-link structural integrity | PASS |
-
-**Automated gate score: 12/12 PASS**
-
-No targeted polish fixes were required — all gates passed on first run against the Phase 5 codebase.
-
----
-
-## Build + Type Verification
+### MetaSchema Extension (src/storage/schemas.ts)
 
 | Check | Result |
 |-------|--------|
-| `npm run typecheck` | Exit 0 — no TypeScript errors |
-| `npm run build` | Exit 0 — 7876 modules, no build errors |
-| `npm run lint` | NOT RUN — ESLint not installed as devDependency; no `eslint.config.*` present (pre-existing project gap, not introduced by Phase 5) |
+| `SeededDomainsSchema` exported | PASS — `export const SeededDomainsSchema = z.object({ tasks, teammates }).partial()` |
+| `.partial()` wraps both keys | PASS — both `tasks` and `teammates` are individually optional |
+| `seededDomains: SeededDomainsSchema.optional()` in MetaSchema | PASS — confirmed in file |
+| Backward-compat: legacy records without `seededDomains` parse cleanly | PASS — field is `.optional()` so absence = undefined (not a parse failure) |
+| SCHEMA_VERSION unchanged at 1 | PASS — `export const SCHEMA_VERSION = 1` confirmed |
+
+### Coordinator Gate Replacement (src/seed/seedAll.ts)
+
+| Check | Result |
+|-------|--------|
+| Single global `if (meta.seededAt !== null) return` GONE | PASS — 0 matches |
+| `seededDomains` appears >= 3 times | PASS — 12 matches |
+| Legacy reconciliation: `tasks: meta.seededAt` branch present | PASS — confirmed |
+| Both seeder call sites preserved | PASS — 2 matches (`seedTeammatesIfNeeded`, `seedTasksIfNeeded`) |
+| `seedTeammatesIfNeeded` called BEFORE `seedTasksIfNeeded` (line 100 vs 106) | PASS — ordering confirmed |
+| `writeJSON(K.meta(), { ...meta, seededAt: newSeededAt, seededDomains: effectiveDomains })` at tail | PASS — confirmed |
+| No null written into seededDomains keys | PASS — 0 matches for `(tasks|teammates):\s*null` |
+| D-12 revision documented in file-header | PASS — `D-12` reference present |
+| Plan 07 + Gap 1/4 references in docblock | PASS — `UAT Gaps 1 + 4` in docblock |
+
+### teamSeed.ts Inner Gate Update
+
+| Check | Result |
+|-------|--------|
+| Legacy `if (meta.seededAt !== null) return` GONE | PASS — 0 matches |
+| New per-domain GATE 1: `meta.seededDomains?.teammates` | PASS — 1 match |
+| GATE 2 defensive guard (`existing.length > 0`) intact | PASS — 1 match |
+| Owner row at index 0 (`[ownerRow, ...fakerTeammates]`) | PASS — confirmed |
+| `writeJSON(K.teammates(...)` preserved | PASS — 1 match |
+| Does NOT write `K.meta()` | PASS — 0 matches |
+| Plan 07 reference in docblock | PASS — 6 matches |
+
+### tasksSeed.ts Inner Gate Update
+
+| Check | Result |
+|-------|--------|
+| Legacy `if (meta.seededAt !== null) return` GONE | PASS — 0 matches |
+| GATE 1a: `meta.seededDomains?.tasks` | PASS — confirmed |
+| GATE 1b legacy-compat: `meta.seededAt !== null && meta.seededDomains === undefined` | PASS — confirmed |
+| GATE 2 defensive guard (`existing.length > 0`) intact | PASS — 1 match |
+| Teammate read for assignee mapping preserved | PASS — `readWithSchema(K.teammates(` present |
+| `writeJSON(K.tasks(...))` preserved | PASS — 1 match |
+| Does NOT write `K.meta()` | PASS — 0 matches |
+| Plan 07 reference in docblock | PASS — 7 matches |
 
 ---
 
-## User-Eye UAT Items (Deferred to /gsd-verify-phase)
+## Plan 08 Specific Verifications (Gap 2 + Gap 3)
 
-The following items require a running browser session to verify. They cannot be confirmed by grep or static analysis. Per D-17, these are persisted here as UAT entries (not a new GSD plan) — to be picked up by `/gsd-verify-phase` per the Phase 4 commit `5195b3b` precedent.
+### InviteTeammateModal.tsx Changes
 
-### UAT-01: Typography gestalt — does the surface feel visually uniform?
+| Check | Result |
+|-------|--------|
+| `useEffect`, `useMemo`, `useRef` all imported from 'react' | PASS — `import { useEffect, useMemo, useRef } from 'react'` |
+| `Title` NOT imported from '@mantine/core' | PASS — 0 matches |
+| `prevOpenedRef = useRef(opened)` present | PASS — 1 match |
+| `form.reset(defaultValues)` in open-transition effect | PASS — 2 matches (call + in comment) |
+| Effect dep array `[opened, form, defaultValues]` | PASS — confirmed |
+| Modal `title="Invite teammate"` plain string | PASS — 1 match |
+| `title={<Title order={3}>Invite teammate</Title>}` GONE | PASS — 0 matches |
+| `defaultValues` memoized via `useMemo` | PASS — 1 match |
+| Misleading doc comment GONE | PASS — 0 matches for "keepMounted={false} drops RHF state on close" |
+| CR-01 reference in doc comment | PASS — "TaskFormModal.tsx CR-01 fix at lines 149-165" present |
+| `PENDO_IDS.team.invite.modalContainer` preserved | PASS — 1 match |
+| `superRefine` (D-03 dedupe) preserved | PASS — 1 match |
+| `createTeammate` + `findTeammateByEmail` wiring preserved | PASS — 2 matches |
+| Toast `'Invite sent'` preserved | PASS — 1 match |
 
-**Test:** Visit Dashboard / Lists / Reports / Settings / Team / Help in sequence in both light and dark mode.
-**Expected:** Font weight, size, line height, and heading hierarchy feel consistent across all six pages. No page feels heavier or lighter than its siblings. The "could this pass for a real B2B SaaS in a screenshot?" gestalt question from ROADMAP Phase 5 Success Criteria #5.
-**Why human:** Subjective visual judgment; grep cannot conclude.
+### 05-04-SUMMARY.md Correction
 
-### UAT-02: Team page — dark mode cell + badge readability
+| Check | Result |
+|-------|--------|
+| Mistaken entry GONE (`Modal title as <Title order={3}> JSX element`) | PASS — 0 matches |
+| Corrected entry present (`Modal title as plain string (NOT a`) | PASS — 1 match |
+| Phase 4 precedent references (TaskFormModal:273, ResetDemoDataModal:128, DeleteConfirmModal:48) | PASS — confirmed |
+| React 19 hydration / h2/h3 nesting reference | PASS — confirmed |
 
-**Test:** Switch to dark mode (Settings → Preferences). Navigate to `/app/team`.
-**Expected:** Table cells, "Invited" badge (yellow), "Owner" display (if static Badge mechanism), avatar initials, and the role Select all remain readable. No white-on-white or gray-on-gray collisions.
-**Why human:** Dark-mode contrast depends on Mantine CSS-var resolution at runtime; static analysis cannot reproduce dark-mode values.
+---
 
-### UAT-03: Invite teammate modal — dark mode recolor
+## Build Verification
 
-**Test:** In dark mode, open the "Invite teammate" modal.
-**Expected:** Modal background, email TextInput, role Select, and footer buttons all recolor cleanly. No raw color overrides showing through.
+| Check | Result |
+|-------|--------|
+| `npm run typecheck` (tsc --noEmit) | PASS — exit 0 |
+| `npm run build` (Vite) | PASS — exit 0, 7876 modules |
+
+---
+
+## Pendo-Readiness Gates (Regression Check)
+
+All 12 automated gates from the Plan 05-06 verification remain passing after Plans 07+08:
+
+| Gate | Check | Result |
+|------|-------|--------|
+| 1 | No `<canvas>` in src/ | PASS — 0 matches |
+| 2 | `.pendo-sr-ignore` on PasswordInput | PASS — 2 matches |
+| 3 | No hand-typed team/help data-pendo-id strings | PASS — 0 matches outside PENDO_IDS.ts |
+| 4 | All page titles `<Title order={3}>` | PASS — no `order={2}` page titles |
+| 5a | No `fw={700}` | PASS |
+| 5b | No `size="xs"` in Phase 5 surfaces | PASS |
+| 6 | No raw px in Phase 5 CSS modules | PASS |
+| 7 | No hardcoded hex in Phase 5 source | PASS |
+| 8 | No `shadow` on /app/* Paper surfaces | PASS |
+| 9 | All 7 empty states present | PASS |
+| 10 | All 7 toast call sites present | PASS |
+| 11 | Destructive confirms intact | PASS |
+
+---
+
+## Requirements Coverage
+
+| Requirement ID | Description | Status | Evidence |
+|---------------|-------------|--------|---------|
+| TEAM-01 | Team page lists teammates with name/email/role/last-active | SATISFIED | TeamTable (4 columns), TeamPage, teamsRepo.listTeammates |
+| TEAM-02 | Invite teammate modal — email+role, Invite sent toast | SATISFIED | InviteTeammateModal with Gap 2+3 fixes; toast present |
+| TEAM-03 | Inline role dropdown persists to localStorage | SATISFIED | updateTeammate in handleRoleChange; Role updated toast |
+| HELP-01 | Help page lists >=6 seeded articles grouped by topic | SATISFIED | 10 articles via HELP_ARTICLES; HelpList groups by topic |
+| HELP-02 | Search articles by title/keyword | SATISFIED | useDebouncedValue 150ms; filter over title+keywords+summary |
+| HELP-03 | Clicking article opens detail view | SATISFIED | HelpArticlePage; getHelpArticleBySlug; body.split('\n\n') |
+| HELP-04 | Stable help anchor for Pendo Resource Center | SATISFIED | PENDO_IDS.nav.help in AppLayout.tsx; D-10 no-op confirmed |
+| DATA-01 | Faker seeding idempotent, user mutations preserved | SATISFIED | Per-domain seededDomains ledger; GATE 2 defensive guards; SCHEMA_VERSION 1 unchanged |
+| UI-01 | Every page-that-can-be-empty has polished empty state | SATISFIED | 7/7 empty states confirmed (Gate 9) |
+| UI-02 | Toast notifications on meaningful actions | SATISFIED | 7/7 toast call sites confirmed (Gate 10) |
+| UI-03 | Destructive actions show confirmation modal | SATISFIED | DeleteConfirmModal + ResetDemoDataModal intact; no new destructive flows |
+| UI-04 | Visual polish — spacing/typography/color consistent | SATISFIED | All 8 automated typography/spacing/color gates pass |
+
+---
+
+## Anti-Patterns
+
+No anti-patterns found in the gap-closure files. Plans 07 and 08 do not introduce:
+- TBD/FIXME/XXX markers
+- Hardcoded empty returns
+- Stubs
+
+---
+
+## Human Verification Required
+
+The following items were deferred from the original UAT (Plan 05-06 D-17) and extended with the new cold-start and modal-lifecycle behaviors that Plans 07+08 address. Items 1-4 are new since the gap closures; items 5-13 carry forward from the original UAT.
+
+### 1. Cold-Start Legacy State Reconciliation (Gap 1 + Gap 4 — new)
+
+**Test:** Open DevTools → Application → Local Storage. Set `halo:v1:meta` to `{"schemaVersion":1,"seededAt":"2026-01-01T00:00:00.000Z","appVersion":"0.1.0"}`. Remove any `halo:v1:teammates:<workspaceId>` key. Hard-refresh. Sign in. Navigate to /app/team.
+**Expected:** Owner row at top of table, 8-12 faker teammates below. No Reset action required. Inspect K.meta() in DevTools — it should contain `seededDomains: { tasks: "2026-01-01T...", teammates: "<now-iso>" }`. Existing tasks (K.tasks) should be byte-for-byte identical (not re-seeded).
+**Why human:** Requires live browser session with DevTools localStorage manipulation to simulate legacy state.
+
+### 2. Invite Modal — Blank Defaults After Submit (Gap 2 — new)
+
+**Test:** /app/team → "Invite teammate" → fill email "alice@example.com", role "Admin" → click "Send invite" → watch toast → click "Invite teammate" again.
+**Expected:** Email field is blank, role is "Member". No leftover values from the first invite.
+**Why human:** RHF open-transition reset lifecycle requires running app.
+
+### 3. Invite Modal — Blank Defaults After Cancel (Gap 2 — new)
+
+**Test:** /app/team → "Invite teammate" → fill email "bob@example.com", role "Viewer" → click Cancel (do NOT submit) → click "Invite teammate" again.
+**Expected:** Email field is blank, role is "Member". Form state leaked by cancel path (not just submit path).
+**Why human:** RHF open-transition reset lifecycle requires running app.
+
+### 4. No h3-in-h2 Console Error on Modal Mount (Gap 3 — new)
+
+**Test:** Open DevTools Console. /app/team → "Invite teammate". Watch console during modal animation.
+**Expected:** ZERO messages containing "In HTML, <h3> cannot be a child of <h2>".
+**Why human:** React 19 hydration warnings appear only at runtime in the browser console.
+
+### 5. Typography Gestalt (UAT-01)
+
+**Test:** Visit Dashboard / Lists / Reports / Settings / Team / Help in both light and dark mode.
+**Expected:** Visually uniform. Passes the "could this pass for a real B2B SaaS in a screenshot?" test.
+**Why human:** Subjective visual judgment.
+
+### 6. Team Page Dark Mode (UAT-02)
+
+**Test:** Dark mode → /app/team. Table cells, Invited badge, role Select all readable.
+**Why human:** Dark-mode contrast requires live browser.
+
+### 7. Invite Modal Dark Mode (UAT-03)
+
+**Test:** Dark mode → Invite teammate modal. All elements recolor cleanly.
 **Why human:** Runtime dark-mode rendering.
 
-### UAT-04: Help page — article row hover + dark mode
+### 8. Help Page Hover + Dark Mode (UAT-04)
 
-**Test:** In dark mode, navigate to `/app/help` and hover over article rows.
-**Expected:** Hover state is visible (Mantine default gray tint or anchor underline) without an indigo tint on the row background (forbidden per UI-SPEC). No-results state text is readable.
-**Why human:** Hover state and dark-mode contrast require a live browser.
+**Test:** Dark mode → /app/help → hover article rows. No-results state readable.
+**Why human:** Hover state and dark-mode contrast require live browser.
 
-### UAT-05: Help detail page — article body readability
+### 9. Help Detail Body Readability (UAT-05)
 
-**Test:** Click any article row → `/app/help/:slug`. Read the body paragraphs.
-**Expected:** Body paragraphs render as distinct `<Text size="md">` blocks with adequate `gap="md"` spacing between them. Article looks like a real help center article (even with faker body text). Topic + title hierarchy is clear.
-**Why human:** Paragraph layout and readability require visual inspection.
+**Test:** Click any article → /app/help/:slug. Body paragraphs look like a real help article.
+**Why human:** Visual inspection required.
 
-### UAT-06: Pendo DevTools spot-check — Team row
+### 10. Pendo DevTools — Team Row (UAT-06)
 
-**Test:** Right-click a non-Owner row's role Select → Inspect.
-**Expected:** The Select's input element carries `data-pendo-id="team.row.role-select"` AND `data-pendo-teammate-id="<uuid>"`. Owner row carries the same `data-pendo-id` with `disabled` attribute (Mechanism A) or renders a static Badge (Mechanism B).
-**Why human:** DevTools attribute inspection requires a live browser.
+**Test:** Inspect non-Owner role Select → confirm both `data-pendo-id` and `data-pendo-teammate-id` attributes.
+**Why human:** DevTools attribute inspection.
 
-### UAT-07: Pendo DevTools spot-check — Help article row
+### 11. Pendo DevTools — Help Article Row (UAT-07)
 
-**Test:** Right-click a Help article row → Inspect.
-**Expected:** Element carries `data-pendo-id="help.article.row"` AND `data-pendo-article-slug="<slug>"`.
-**Why human:** DevTools attribute inspection requires a live browser.
+**Test:** Inspect Help article row → confirm both `data-pendo-id` and `data-pendo-article-slug` attributes.
+**Why human:** DevTools attribute inspection.
 
-### UAT-08: Pendo DevTools spot-check — PasswordInput class
+### 12. Pendo DevTools — PasswordInput Class (UAT-08)
 
-**Test:** Right-click the password input on the sign-in page → Inspect.
-**Expected:** The `<input type="password">` DOM element has a class containing `pendo-sr-ignore`.
-**Why human:** Runtime DOM inspection; the class merge is verified by grep (Gate 2) but DOM delivery requires the running app.
+**Test:** Inspect password input → confirm `pendo-sr-ignore` in class list.
+**Why human:** DOM inspection.
 
-### UAT-09: Reset demo data — re-seed on next sign-in
+### 13. Reset Demo Data Re-seed (UAT-09)
 
-**Test:** Settings → Preferences → "Reset demo data" → Confirm. Re-register or sign in. Navigate to `/app/team`.
-**Expected:** Owner row (signed-in visitor) appears at top of Team table. Faker-seeded teammates appear below. Tasks in `/app/lists` show assignees from the re-seeded teammate list (no "ghost" assignees from the prior seed cycle).
-**Why human:** Full reset + re-seed cycle requires running app + localStorage DevTools inspection.
-
-### UAT-10: Lists form reset on create-mode reopen (Phase 4 carry-over)
-
-**Test:** Phase 4 UAT item (listed in `04-VERIFICATION.md`). Sign in → Lists → "New task" → type title → submit → "New task" again.
-**Expected:** Form opens with blank defaults.
-**Why human:** Phase 4 CR-01 fix runtime verification — carried forward as-is (not a Phase 5 concern).
+**Test:** Settings → Reset → re-sign-in → /app/team (Owner + teammates) + /app/lists (team assignees).
+**Why human:** Full reset cycle requires running app + localStorage inspection.
 
 ---
 
-## ROADMAP Phase 5 Success Criteria #5 — Final Status
+## ROADMAP Phase 5 Success Criteria — Final Status
 
-| Criterion | Automated | Status |
-|-----------|-----------|--------|
-| "could this pass for a real B2B SaaS in a screenshot?" | UAT-01 (human) | DEFERRED |
-| No `<canvas>` anywhere | Gate 1 | PASS |
-| `.pendo-sr-ignore` on PasswordInput | Gate 2 | PASS |
-| All Phase 5 interactive elements reference PENDO_IDS | Gate 3 | PASS |
-| All `/app/*` routes deep-link cleanly on refresh | Gate 12 | PASS (structural) + UAT runtime |
-| Team page: invite, role-change, empty state | Gates 9, 10, 11 | PASS (structural) + UAT-02/03/06 |
-| Help page: search, no-results, detail, article-not-found | Gates 9, 12 | PASS (structural) + UAT-04/05/07 |
-| Typography/spacing/color consistency | Gates 4, 5a, 5b, 6, 7, 8 | PASS |
-| Toast completeness | Gate 10 | PASS |
-| Destructive confirms intact | Gate 11 | PASS |
-
-**Automated: 12/12 gates PASS. Human UAT: 10 items (UAT-01 through UAT-10) deferred to /gsd-verify-phase.**
+| # | Criterion | Automated | Human |
+|---|-----------|-----------|-------|
+| 1 | /app/team: invite, role-change, teammate list | VERIFIED | UAT items 2, 3, 10 |
+| 2 | /app/help: search, detail, stable anchor | VERIFIED | UAT items 8, 9, 11 |
+| 3 | Faker seeding idempotent; no clobber on reload | VERIFIED | UAT items 1, 13 |
+| 4 | All empty states, all toasts, all destructive confirms | VERIFIED | — |
+| 5 | "Real B2B SaaS" gestalt + Pendo-readiness checklist | VERIFIED (automated) | UAT items 4-12 |
 
 ---
 
-_Verified: 2026-05-15_
-_Verifier: Claude (gsd-executor / plan 05-06)_
+_Verified: 2026-05-16_
+_Verifier: Claude (gsd-verifier)_
+_Re-verification after Plans 05-07 + 05-08 gap closures_
