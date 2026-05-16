@@ -49,7 +49,7 @@ key-decisions:
 
 patterns-established:
   - "Team row dynamic-list: data-pendo-teammate-id={teammate.id} alongside PENDO_IDS.team.row.roleSelect on Select element"
-  - "Modal title as <Title order={3}> JSX element (not string prop) per Phase 4 modal-nesting fix"
+  - "Modal title as plain string (NOT a `<Title>` JSX wrapper) — Mantine's ModalBaseTitle renders the title slot as `<Box component='h2'>` unconditionally, so wrapping in `<Title order={3}>` produces invalid `<h2><h3>...</h3></h2>` nesting (React 19 hydration error). Phase 4 precedent: TaskFormModal:273, ResetDemoDataModal:128, DeleteConfirmModal:48 all pass plain strings. Plan 08 corrected this entry after the original Plan 04 SUMMARY misstated the precedent."
 
 requirements-completed: [TEAM-01, TEAM-02, TEAM-03, UI-01, UI-02]
 
