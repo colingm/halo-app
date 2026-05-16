@@ -13,14 +13,23 @@
  *   - Calls onSuccess() (parent bumps refreshKey) and onClose().
  *
  * Owner is NOT in the role options (D-02 — Owner is not invitable).
- * keepMounted={false} drops RHF state on close (mirrors TaskFormModal D-26 idiom).
+ *
+ * Form state reset on reopen is owned by the open-transition useEffect that
+ * calls form.reset(defaultValues) on the false->true `opened` transition
+ * (mirrors TaskFormModal.tsx CR-01 fix at lines 149-165). InviteTeammateModal
+ * stays mounted by TeamPage across opens — useForm's internal state would
+ * otherwise survive every open/submit/close cycle. The `keepMounted={false}`
+ * on the inner Mantine <Modal> only controls Mantine's internal transitioned
+ * DOM, NOT the outer React component holding the useForm hook; it is kept as
+ * decorative (matches Mantine's default behavior anyway) but the actual
+ * reset behavior comes from the useEffect.
  */
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Modal, Stack, Group, Title } from '@mantine/core'
+import { Modal, Stack, Group } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { IconCheck } from '@tabler/icons-react'
 import { TextInput, Select, Button } from '../../ui/primitives'
@@ -64,11 +73,23 @@ export function InviteTeammateModal({
 
   type InviteFormValues = z.infer<typeof InviteFormSchema>
 
+  const defaultValues: InviteFormValues = useMemo(() => ({ email: '', workspaceRole: 'Member' as const }), [])
+
   const form = useForm<InviteFormValues>({
     resolver: zodResolver(InviteFormSchema),
     mode: 'onSubmit',
-    defaultValues: { email: '', workspaceRole: 'Member' },
+    defaultValues,
   })
+
+  // Open-transition reset (Plan 08 — Gap 2 fix). Mirrors TaskFormModal.tsx CR-01:158-165. InviteTeammateModal stays mounted by TeamPage across opens, so useForm's internal state persists — this effect resets defaults on the false->true `opened` transition. No `mode === 'create'` guard: this modal has only one mode.
+  const prevOpenedRef = useRef(opened)
+  useEffect(() => {
+    const wasClosed = !prevOpenedRef.current
+    prevOpenedRef.current = opened
+    if (opened && wasClosed) {
+      form.reset(defaultValues)
+    }
+  }, [opened, form, defaultValues])
 
   const onSubmit = form.handleSubmit((values) => {
     // D-03: derive firstName from email local-part (split on . or _, Title-Case each segment).
@@ -105,7 +126,7 @@ export function InviteTeammateModal({
     <Modal
       opened={opened}
       onClose={onClose}
-      title={<Title order={3}>Invite teammate</Title>}
+      title="Invite teammate"
       size="md"
       centered
       keepMounted={false}
