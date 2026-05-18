@@ -1,5 +1,5 @@
 import React from 'react'
-import { Anchor, Stack, Text, Title } from '@mantine/core'
+import { Anchor, Image, Stack, Text } from '@mantine/core'
 
 /**
  * Phase 1 landing page — placeholder for the public index route `/`.
@@ -14,7 +14,13 @@ import { Anchor, Stack, Text, Title } from '@mantine/core'
 export function Landing(): React.JSX.Element {
   return (
     <Stack gap="lg" pt="xl">
-      <Title order={1}>Halo</Title>
+      <Image
+        src="/halo-logo.png"
+        alt="Halo"
+        h={56}
+        w="auto"
+        fit="contain"
+      />
       <Text c="dimmed" size="lg">
         A demo project and task management app. All data is fabricated and persisted only
         in your browser — safe to explore without entering real information.
