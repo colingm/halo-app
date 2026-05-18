@@ -46,7 +46,16 @@ export function PreferencesTab(): React.JSX.Element {
             { value: 'auto', label: <Group gap={8} wrap="nowrap"><IconDeviceLaptop size={14} />System</Group> },
           ]}
           value={colorScheme}
-          onChange={(v) => setColorScheme(v as ColorScheme)}
+          onChange={(v) => {
+            const previousTheme = colorScheme
+            setColorScheme(v as ColorScheme)
+            if (typeof pendo !== 'undefined') {
+              pendo.track('theme_changed', {
+                newTheme: v,
+                previousTheme,
+              })
+            }
+          }}
           data-pendo-id={PENDO_IDS.settings.preferences.themeToggle}
         />
       </Stack>

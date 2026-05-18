@@ -195,7 +195,18 @@ export function TaskFormModal({
         icon: <IconCheck size={18} />,
         autoClose: 3000,
       })
+      if (typeof pendo !== 'undefined') {
+        pendo.track('task_created', {
+          status: values.status,
+          priority: values.priority,
+          hasAssignee: Boolean(values.assignee?.id),
+          hasDueDate: values.dueDate !== null,
+          hasDescription: values.description.length > 0,
+        })
+      }
     } else if (initialTask) {
+      const changedFields = (Object.keys(values) as (keyof typeof values)[])
+        .filter((k) => JSON.stringify(values[k]) !== JSON.stringify((initialTask as Record<string, unknown>)[k]))
       updateTask(workspaceId, initialTask.id, values)
       notifications.show({
         title: 'Changes saved',
@@ -204,6 +215,16 @@ export function TaskFormModal({
         icon: <IconCheck size={18} />,
         autoClose: 3000,
       })
+      if (typeof pendo !== 'undefined') {
+        pendo.track('task_updated', {
+          taskId: initialTask.id,
+          fieldsChanged: changedFields.join(', '),
+          newStatus: values.status,
+          newPriority: values.priority,
+          hasAssignee: Boolean(values.assignee?.id),
+          hasDueDate: values.dueDate !== null,
+        })
+      }
     }
     onSuccess()
     onClose()

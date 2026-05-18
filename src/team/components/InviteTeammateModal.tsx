@@ -118,6 +118,14 @@ export function InviteTeammateModal({
       autoClose: 3000,
     })
 
+    if (typeof pendo !== 'undefined') {
+      pendo.track('teammate_invited', {
+        teammateEmail: values.email.toLowerCase(),
+        workspaceRole: values.workspaceRole,
+        workspaceId,
+      })
+    }
+
     onSuccess()
     onClose()
   })

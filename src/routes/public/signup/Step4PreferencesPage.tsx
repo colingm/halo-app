@@ -177,6 +177,20 @@ export function Step4PreferencesPage(): React.JSX.Element {
       // (T-02-17) ends here. sessionStorage[halo:v1:signup:draft] is removed.
       clearWizardDraft()
 
+      // Track signup completion before navigating away.
+      if (typeof pendo !== 'undefined') {
+        pendo.track('signup_completed', {
+          primaryUseCase: step4Values.primaryUseCase,
+          teamSize: step4Values.teamSize,
+          topGoals: step4Values.topGoals.join(', '),
+          planTier: s3.planTier,
+          companySize: s3.companySize,
+          industry: s3.industry,
+          role: s2.role,
+          jobTitle: s2.jobTitle,
+        })
+      }
+
       // Redirect into the authenticated area. replace:true so the back button
       // from /app does not return to /signup/preferences.
       navigate('/app', { replace: true })

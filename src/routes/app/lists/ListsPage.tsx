@@ -149,6 +149,25 @@ export function ListsPage(): React.JSX.Element {
                   // fall back to 'todo' for legacy tasks without prevStatus.
                   status: nextDone ? 'done' : (task.prevStatus ?? 'todo'),
                 })
+                if (typeof pendo !== 'undefined') {
+                  if (nextDone) {
+                    pendo.track('task_completed', {
+                      taskId: task.id,
+                      previousStatus: task.status,
+                      priority: task.priority,
+                      assigneeId: task.assignee?.id ?? '',
+                      hadDueDate: task.dueDate !== null,
+                      wasOverdue: task.dueDate !== null && new Date(task.dueDate) < new Date(),
+                    })
+                  } else {
+                    pendo.track('task_uncompleted', {
+                      taskId: task.id,
+                      restoredStatus: task.prevStatus ?? 'todo',
+                      priority: task.priority,
+                      assigneeId: task.assignee?.id ?? '',
+                    })
+                  }
+                }
                 refresh()
               }}
             />
@@ -187,6 +206,14 @@ export function ListsPage(): React.JSX.Element {
         onClose={() => setDeleteTarget(null)}
         onConfirm={() => {
           if (deleteTarget) {
+            if (typeof pendo !== 'undefined') {
+              pendo.track('task_deleted', {
+                taskId: deleteTarget.id,
+                taskStatus: deleteTarget.status,
+                taskPriority: deleteTarget.priority,
+                hadAssignee: Boolean(deleteTarget.assignee?.id),
+              })
+            }
             deleteTask(workspaceId, deleteTarget.id)
             notifications.show({
               title: 'Task deleted',
