@@ -5,7 +5,7 @@ import {
   Group,
   Stack,
   Box,
-  Title,
+  Image,
   Text,
   Avatar,
   Menu,
@@ -106,9 +106,14 @@ export function AppLayout(): React.JSX.Element {
         <Group h="100%" px="md" justify="space-between">
           {/* Left: wordmark aligned to navbar column width */}
           <Box w={208}>
-            <Title order={3} c="indigo.7" data-pendo-id={PENDO_IDS.topbar.logo}>
-              Halo
-            </Title>
+            <Image
+              src="/halo-logo.png"
+              alt="Halo"
+              h={32}
+              w="auto"
+              fit="contain"
+              data-pendo-id={PENDO_IDS.topbar.logo}
+            />
           </Box>
           {/* Right: workspace name + user menu trigger */}
           <Group gap="md">
