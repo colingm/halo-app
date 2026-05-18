@@ -182,7 +182,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260518-eta | Wire up logo PNGs as favicon and header logo | 2026-05-18 | db29694 | [260518-eta-wire-up-logo-pngs-as-favicon-and-header-](./quick/260518-eta-wire-up-logo-pngs-as-favicon-and-header-/) |
-| 260518-f3f | Add dark-mode header logo variant | 2026-05-18 | (pending) | [260518-f3f-add-dark-mode-header-logo-variant](./quick/260518-f3f-add-dark-mode-header-logo-variant/) |
+| 260518-f3f | Add dark-mode header logo variant | 2026-05-18 | 0611a32 | [260518-f3f-add-dark-mode-header-logo-variant](./quick/260518-f3f-add-dark-mode-header-logo-variant/) |
 
 ## Deferred Items
 
