@@ -5,7 +5,7 @@ milestone_name: milestone
 status: ready_to_plan
 stopped_at: Phase 5 context gathered
 last_updated: "2026-05-16T01:30:32.520Z"
-last_activity: 2026-05-18 -- Completed quick task 260518-eta: Wire up logo PNGs as favicon and header logo
+last_activity: 2026-05-18 -- Completed quick task 260518-f3f: Add dark-mode header logo variant
 progress:
   total_phases: 6
   completed_phases: 5
@@ -182,6 +182,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260518-eta | Wire up logo PNGs as favicon and header logo | 2026-05-18 | db29694 | [260518-eta-wire-up-logo-pngs-as-favicon-and-header-](./quick/260518-eta-wire-up-logo-pngs-as-favicon-and-header-/) |
+| 260518-f3f | Add dark-mode header logo variant | 2026-05-18 | (pending) | [260518-f3f-add-dark-mode-header-logo-variant](./quick/260518-f3f-add-dark-mode-header-logo-variant/) |
 
 ## Deferred Items
 
