@@ -34,7 +34,7 @@ export function PendoBridge({ children }: { children: ReactNode }) {
     if (isAuthenticated && currentVisitor && currentWorkspace) {
       pendo.identify({
         visitor: {
-          id: currentVisitor.id,
+          id: currentVisitor.email,
           email: currentVisitor.email,
           full_name: `${currentVisitor.firstName} ${currentVisitor.lastName}`,
           firstName: currentVisitor.firstName,
@@ -50,7 +50,7 @@ export function PendoBridge({ children }: { children: ReactNode }) {
           createdAt: currentVisitor.createdAt,
         },
         account: {
-          id: currentWorkspace.id,
+          id: currentWorkspace.companyName,
           name: currentWorkspace.companyName,
           companyName: currentWorkspace.companyName,
           companySize: currentWorkspace.companySize,
