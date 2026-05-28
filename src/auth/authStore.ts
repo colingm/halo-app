@@ -131,6 +131,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         visitorId: visitor?.id ?? '',
         workspaceId: workspace?.id ?? '',
       })
+      pendo.clearSession()
     }
     get().clearSession()
     clearWizardDraft()
