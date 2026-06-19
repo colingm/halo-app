@@ -19,6 +19,7 @@ import {
   IconUsers,
   IconSettings,
   IconHelpCircle,
+  IconInfoCircle,
   IconChevronDown,
   IconUser,
   IconLogout,
@@ -49,7 +50,8 @@ function isNavActive(
     | '/app/reports'
     | '/app/team'
     | '/app/settings'
-    | '/app/help',
+    | '/app/help'
+    | '/app/about',
 ): boolean {
   if (target === '/app') return pathname === '/app'
   return pathname.startsWith(target)
@@ -214,6 +216,14 @@ export function AppLayout(): React.JSX.Element {
             active={isNavActive(pathname, '/app/help')}
             variant="light"
             onClick={() => navigate('/app/help')}
+          />
+          <NavLink
+            pendoId={PENDO_IDS.nav.about}
+            label="About"
+            leftSection={<IconInfoCircle size={18} stroke={1.6} />}
+            active={isNavActive(pathname, '/app/about')}
+            variant="light"
+            onClick={() => navigate('/app/about')}
           />
         </Stack>
       </AppShell.Navbar>

@@ -115,6 +115,7 @@ export const PENDO_IDS = {
     team:      'nav.team',
     settings:  'nav.settings',
     help:      'nav.help',
+    about:     'nav.about',
   },
 
   /** Phase 3 top-bar + user-menu targets. */
@@ -272,6 +273,17 @@ export const PENDO_IDS = {
     emptyState: {
       container: 'team.empty-state.container',
       cta:       'team.empty-state.cta',
+    },
+  },
+
+  /** About page targets — nav link + feedback form. */
+  about: {
+    container: 'about.container',
+    feedback: {
+      category: 'about.feedback.category',
+      subject:  'about.feedback.subject',
+      message:  'about.feedback.message',
+      submit:   'about.feedback.submit',
     },
   },
 

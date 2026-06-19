@@ -54,6 +54,7 @@ import { TeamPage } from './routes/app/team/TeamPage'
 import { SettingsPage } from './routes/app/settings/SettingsPage'
 import { HelpPage } from './routes/app/help/HelpPage'
 import { HelpArticlePage } from './routes/app/help/HelpArticlePage'
+import { AboutPage } from './routes/app/about/AboutPage'
 import { RequireAuth, RequireAnon } from './auth'
 import { SignupShell } from './routes/public/signup/SignupShell'
 import { Step1AccountPage } from './routes/public/signup/Step1AccountPage'
@@ -124,6 +125,7 @@ export const router = createBrowserRouter([
           // nesting would render the list above the detail simultaneously.
           // UI-SPEC line 840 explicitly accepts either nested or flat sibling shape.
           { path: 'help/:slug',   Component: HelpArticlePage },
+          { path: 'about',        Component: AboutPage },
         ],
       },
     ],
