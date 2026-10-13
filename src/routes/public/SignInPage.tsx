@@ -134,7 +134,7 @@ export function SignInPage(): React.JSX.Element {
         </Paper>
         <Text size="sm" c="dimmed" ta="center">
           Don't have an account?{' '}
-          <Anchor href="/signup" pendoId={PENDO_IDS.signin.signupAnchor}>Create one</Anchor>
+          <Anchor href={`${import.meta.env.BASE_URL}signup`} pendoId={PENDO_IDS.signin.signupAnchor}>Create one</Anchor>
         </Text>
       </Stack>
     </Container>

@@ -56,6 +56,10 @@ export const K = {
   /** `halo:v1:session` — current Session record (visitorId + workspaceId + signedInAt). */
   session: (): string => `halo:v${SCHEMA_VERSION}:session`,
 
+  /** `halo:v1:chat:{workspaceId}` — per-workspace agent chat message history.
+   *  Pattern mirrors K.tasks; no SCHEMA_VERSION bump because the key is additive. */
+  chat: (workspaceId: string): string => `halo:v${SCHEMA_VERSION}:chat:${workspaceId}`,
+
   /** `halo:v1:signup:draft` — wizard partial draft. Lives in `sessionStorage`, NOT `localStorage`
    *  (see file-level "Storage-backend note" above). Cleared on signup completion / sign-out. */
   signupDraft: (): string => `halo:v${SCHEMA_VERSION}:signup:draft`,

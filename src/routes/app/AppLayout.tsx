@@ -27,6 +27,7 @@ import { NavLink } from '../../ui/primitives'
 import { PENDO_IDS } from '../../pendo/PENDO_IDS'
 import { useAuthStore } from '../../auth'
 import { seedDemoData } from '../../seed/seedAll'
+import { ChatLauncher } from '../../chat'
 
 /**
  * Active-route detection helper (per D-12 and UI-SPEC §"Navbar contents").
@@ -109,7 +110,11 @@ export function AppLayout(): React.JSX.Element {
           {/* Left: wordmark aligned to navbar column width */}
           <Box w={208}>
             <Image
-              src={colorScheme === 'dark' ? '/halo-logo-dark.png' : '/halo-logo.png'}
+              src={
+                colorScheme === 'dark'
+                  ? `${import.meta.env.BASE_URL}halo-logo-dark.png`
+                  : `${import.meta.env.BASE_URL}halo-logo.png`
+              }
               alt="Halo"
               h={32}
               w="auto"
@@ -221,6 +226,8 @@ export function AppLayout(): React.JSX.Element {
       <AppShell.Main>
         <Outlet />
       </AppShell.Main>
+
+      <ChatLauncher />
     </AppShell>
   )
 }

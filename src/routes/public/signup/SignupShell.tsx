@@ -86,7 +86,7 @@ export function SignupShell(): React.JSX.Element {
         </Paper>
         <Text size="sm" c="dimmed" ta="center">
           Already have an account?{' '}
-          <Anchor href="/signin" pendoId={PENDO_IDS.signup.step1.signinAnchor}>
+          <Anchor href={`${import.meta.env.BASE_URL}signin`} pendoId={PENDO_IDS.signup.step1.signinAnchor}>
             Sign in
           </Anchor>
         </Text>
