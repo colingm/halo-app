@@ -119,7 +119,7 @@ export function Step1AccountPage(): React.JSX.Element {
                 <span>
                   {EMAIL_DUPLICATE_MESSAGE}{' '}
                   <Anchor
-                    href="/signin"
+                    href={`${import.meta.env.BASE_URL}signin`}
                     pendoId={PENDO_IDS.signup.step1.signinAnchor}
                   >
                     Sign in instead?

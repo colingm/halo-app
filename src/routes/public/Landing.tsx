@@ -16,7 +16,11 @@ export function Landing(): React.JSX.Element {
   return (
     <Stack gap="lg" pt="xl">
       <Image
-        src={colorScheme === 'dark' ? '/halo-logo-dark.png' : '/halo-logo.png'}
+        src={
+          colorScheme === 'dark'
+            ? `${import.meta.env.BASE_URL}halo-logo-dark.png`
+            : `${import.meta.env.BASE_URL}halo-logo.png`
+        }
         alt="Halo"
         h={56}
         w="auto"
@@ -27,8 +31,8 @@ export function Landing(): React.JSX.Element {
         in your browser — safe to explore without entering real information.
       </Text>
       <Stack gap="xs">
-        <Anchor href="/signin">Sign in (Phase 2)</Anchor>
-        <Anchor href="/signup">Sign up (Phase 2)</Anchor>
+        <Anchor href={`${import.meta.env.BASE_URL}signin`}>Sign in (Phase 2)</Anchor>
+        <Anchor href={`${import.meta.env.BASE_URL}signup`}>Sign up (Phase 2)</Anchor>
       </Stack>
     </Stack>
   )

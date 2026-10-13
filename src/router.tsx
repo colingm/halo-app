@@ -38,9 +38,11 @@
  * and AppLayout. Phase 3 deliberately does not include it.
  *
  * FND-03: History API routing (createBrowserRouter, NOT createHashRouter).
- * The Vite dev server's default SPA fallback serves index.html on every
- * path, so refreshing on `/app/reports` works without server-side
- * routing logic.
+ * The router is mounted under `import.meta.env.BASE_URL` (`/` in dev,
+ * `/halo-app/` in a Pages build). On a static host there is no
+ * server-side routing logic — it's the emitted `404.html` copy of
+ * `index.html` (see vite.config.ts) that makes refreshing on a deep link
+ * like `/app/reports` work.
  */
 import { createBrowserRouter } from 'react-router'
 import { PublicLayout } from './routes/public/PublicLayout'
@@ -128,4 +130,4 @@ export const router = createBrowserRouter([
       },
     ],
   },
-])
+], { basename: import.meta.env.BASE_URL })

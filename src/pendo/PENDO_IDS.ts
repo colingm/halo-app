@@ -275,6 +275,22 @@ export const PENDO_IDS = {
     },
   },
 
+  /** v1.1 Agent Chat targets — floating launcher + panel, persistent across all /app/* routes. */
+  agentChat: {
+    launcher: 'agent-chat.launcher',
+    panel: {
+      container:   'agent-chat.panel.container',
+      closeButton: 'agent-chat.panel.close-button',
+      clearButton: 'agent-chat.panel.clear-button',
+      messageList: 'agent-chat.panel.message-list',
+      // Dynamic-list parameterization: consumers add data-pendo-message-id={message.id}.
+      messageRow:  'agent-chat.panel.message-row',
+      input:       'agent-chat.panel.input',
+      sendButton:  'agent-chat.panel.send-button',
+      errorState:  'agent-chat.panel.error-state',
+    },
+  },
+
   /** Phase 5 Help page targets — D-14. */
   help: {
     search: 'help.search',

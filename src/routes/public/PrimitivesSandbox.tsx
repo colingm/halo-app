@@ -51,7 +51,7 @@ export function PrimitivesSandbox(): React.JSX.Element {
           placeholder="At least 8 characters"
         />
 
-        <Anchor pendoId={PENDO_IDS.sandbox.signupAnchor} href="/">
+        <Anchor pendoId={PENDO_IDS.sandbox.signupAnchor} href={import.meta.env.BASE_URL}>
           Back to landing
         </Anchor>
       </Stack>
